@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+#EM DESENVOLVIMENTO
+
 from universe import *
 import pygame as pg
 import math as mt
