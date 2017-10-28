@@ -94,7 +94,7 @@ Exemplos:
 '''
 
 LEITE_INICIAL = Leite(0, 0)
-LEITE_ATIRAR = Leite(v.x, 35)
+LEITE_ATIRAR = Leite(vaca, 35)
 LEITE_FINAL = Leite(PAREDE_CIMA, 35)
 
 '''
@@ -117,7 +117,7 @@ Exemplos:
 '''
 
 BALA_INICIAL = Bala(0, 0)
-BALA_ATIRAR = Bala(z.x, 20)
+BALA_ATIRAR = Bala(zumbi, 20)
 BALA_FINAL = Bala(PAREDE_BAIXO, -20)
 
 '''
@@ -152,3 +152,112 @@ def fn_para_jogo(jogo):
         jogo.leite
         jogo.game_over
 '''
+
+#SEGUNDA PARTE
+'''===================='''
+''' Funções: '''
+
+'''
+mover_vaca: Vaca -> Vaca
+Produz a próxima vaca (ou seja, fazer ela andar)
+'''
+def mover_vaca(vaca):
+    if vaca.x < 0 or vaca.x > LARGURA:
+        return "Erro: vaca invalida"
+    else:
+        #calcula novo dx
+        if (vaca.x == PAREDE_DIREITA and vaca.dx > 0) \
+                or (vaca.x == PAREDE_ESQUERDA and vaca.dx < 0):  #se vaca bateu na parede
+            vaca.dx = - vaca.dx
+        #usar depurador (debugger)
+
+        #calcula novo x
+        vaca.x = vaca.x + vaca.dx
+
+        if vaca.x > PAREDE_DIREITA:
+            vaca.x = PAREDE_DIREITA
+        elif vaca.x < PAREDE_ESQUERDA:
+            vaca.x = PAREDE_ESQUERDA
+
+        return vaca
+
+'''
+mover_zumbi: Zumbi -> Zumbi
+Mover o Zumbi no eixo x usando o dx
+'''
+def mover_zumbi(zumbi):
+    if zumbi.x < 0 or zumbi.x > LARGURA:
+        return "Erro: vaca invalida"
+    else:
+        #calcula novo dx
+        if (zumbi.x == PAREDE_DIREITA and zumbi.dx > 0) \
+                or (zumbi.x == PAREDE_ESQUERDA and zumbi.dx < 0):  #se vaca bateu na parede
+            zumbi.dx = - zumbi.dx
+        #usar depurador (debugger)
+
+        #calcula novo x
+        zumbi.x = zumbi.x + zumbi.dx
+
+        if zumbi.x > PAREDE_DIREITA:
+            zumbi.x = PAREDE_DIREITA
+        elif zumbi.x < PAREDE_ESQUERDA:
+            zumbi.x = PAREDE_ESQUERDA
+
+        return zumbi
+
+### ADICIONAR FUNÇÃO DE COLISÃO ###
+'''distancia: Int Int Int Int -> Float
+Calcula a distancia entre dois pontos
+'''
+def distancia(x1, y1, x2, y2):
+    return math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2)
+
+
+
+'''
+colidirem: Vaca, Chupacabra -> Boolean
+Verifica se a vaca e o chupacabra colidiram
+'''
+def colidirem(vaca, zumbi):
+    raio1 = IMG_VACA.get_width()/2
+    raio2 = IMG_ZUMBI.get_width()/2
+    d = distancia(vaca.x, Y_VACA, zumbi.x, zumbi.y)
+    if d <= raio1 + raio2:
+        return True
+    #else
+    return False
+
+'''
+mover_jogo: Jogo -> Jogo
+A funcao que eh chamada a cada tick para o jogo
+!!!
+'''
+def mover_jogo(jogo):
+
+    for zumbi in jogo.zumbi:
+        if colidirem(jogo.vaca, zumbi):
+            jogo.game_over = True
+            return jogo
+
+    #else
+    mover_vaca(jogo.vaca)
+
+    for zumbi in jogo.zumbi:
+        mover_zumbi(zumbi)  # funcao auxiliar (helper)
+
+    return jogo
+
+
+'''
+desenha_vaca: Vaca -> Imagem
+Desenha a vaca na tela
+'''
+def desenha_vaca(vaca):
+    if vaca.dx < 0:
+        TELA.blit(IMG_VACA,
+                  (vaca.x - IMG_VACA.get_width() / 2,
+                   Y_VACA - IMG_VACA.get_height() / 2))
+    else:
+        TELA.blit(IMG_VACA,
+                  (vaca.x - IMG_VACA.get_width() / 2,
+                   Y_VACA - IMG_VACA.get_height() / 2))
