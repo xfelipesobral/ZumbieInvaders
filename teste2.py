@@ -54,7 +54,7 @@ interp.: representa a posicao x da vaca, e o deslocamento
 a cada tick no eixo x, chamado de dx
 Exemplos:
 '''
-VACA_INICIAL = Vaca((ALTURA/2)/2, 3)
+VACA_INICIAL = Vaca((ALTURA/2)/2, 40)
 # VACA_MEIO = Vaca(LARGURA//2, 3)
 VACA_FIM = Vaca(LARGURA, 3)
 VACA_VIRANDO = Vaca(LARGURA, -3)
