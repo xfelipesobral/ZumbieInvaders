@@ -15,21 +15,25 @@ TELA = pg.display.set_mode((LARGURA, ALTURA))
 try:
     IMG_VACA = pg.image.load('img/vaca.png')
     IMG_ZUMBI = pg.image.load('img/zumbi.gif').convert()
-    IMG_BALA_V = pg.image.load('#')
-    IMG_BALA_Z = pg.image.load('#')
+    IMG_BALA_V = pg.image.load('img/vaca.png')
+    IMG_BALA_Z = pg.image.load('img/vaca.png')
+    IMG_BACKGROUND = pg.image.load('img/bg.jpg')
 
 except:
     IMG_VACA = pg.Surface((100,100),pg.SRCALPHA)
     IMG_ZUMBI = pg.Surface((100,100),pg.SRCALPHA)
 
-Y_VACA = (ALTURA/2)/2
+IMG_VACA = pg.transform.scale(IMG_VACA, (50, 50))
+IMG_ZUMBI = pg.transform.scale(IMG_ZUMBI, (50, 50))
+
+Y_VACA = 600 - IMG_VACA.get_width()/2
 Y_ZUMBI = ALTURA/2
 
 PAREDE_ESQUERDA = 0 + IMG_VACA.get_width()/2
 PAREDE_DIREITA = LARGURA - IMG_VACA.get_width()/2
 
-PAREDE_CIMA = IMG_BALA_V.get_height()/2
-PAREDE_BAIXO = IMG_BALA_Z.get_height()/2
+PAREDE_CIMA = 0
+PAREDE_BAIXO = ALTURA
 
 '''==================='''
 '''# Definições de dados: '''
@@ -68,10 +72,10 @@ a cada tick respectivamente no eixo x e y
 Exemplos:
 '''
 
-ZUMBI_INICIAL = Zumbi(PAREDE_ESQUERDA, PAREDE_ESQUERDA, 2, 3)
-ZUMBI_FINAL = Zumbi(PAREDE_DIREITA, PAREDE_DIREITA, 2, 3)
-ZUMBI_VOLTANDO = Zumbi(PAREDE_DIREITA, PAREDE_DIREITA, -2, -3)
-ZUMBI_FINAL_VOLTANDO = Zumbi(PAREDE_ESQUERDA, PAREDE_ESQUERDA, -2, -3)
+ZUMBI_INICIAL = Zumbi(PAREDE_ESQUERDA, PAREDE_ESQUERDA, 1, 1)
+ZUMBI_FINAL = Zumbi(PAREDE_DIREITA, PAREDE_DIREITA, 1, 1)
+ZUMBI_VOLTANDO = Zumbi(PAREDE_DIREITA, PAREDE_DIREITA, -1, -1)
+ZUMBI_FINAL_VOLTANDO = Zumbi(PAREDE_ESQUERDA, PAREDE_ESQUERDA, -1, -1)
 
 
 '''
@@ -84,6 +88,7 @@ def fn_para_zumbi(z):
         v.dx
 '''
 
+
 Leite = namedlist("Leite", "y, dy")
 
 '''
@@ -94,7 +99,7 @@ Exemplos:
 '''
 
 LEITE_INICIAL = Leite(0, 0)
-LEITE_ATIRAR = Leite(vaca, 35)
+##LEITE_ATIRAR = Leite(vaca, 35)
 LEITE_FINAL = Leite(PAREDE_CIMA, 35)
 
 '''
@@ -117,7 +122,7 @@ Exemplos:
 '''
 
 BALA_INICIAL = Bala(0, 0)
-BALA_ATIRAR = Bala(zumbi, 20)
+##BALA_ATIRAR = Bala(zumbi, 20)
 BALA_FINAL = Bala(PAREDE_BAIXO, -20)
 
 '''
@@ -235,7 +240,7 @@ A funcao que eh chamada a cada tick para o jogo
 def mover_jogo(jogo):
 
     for zumbi in jogo.zumbi:
-        if colidirem(jogo.vaca, zumbi):
+        if colidirem(jogo.vaca, jogo.zumbi):
             jogo.game_over = True
             return jogo
 
@@ -243,21 +248,90 @@ def mover_jogo(jogo):
     mover_vaca(jogo.vaca)
 
     for zumbi in jogo.zumbi:
-        mover_zumbi(zumbi)  # funcao auxiliar (helper)
+        mover_zumbi(jogo.zumbi)  # funcao auxiliar (helper)
 
     return jogo
-
 
 '''
 desenha_vaca: Vaca -> Imagem
 Desenha a vaca na tela
 '''
 def desenha_vaca(vaca):
-    if vaca.dx < 0:
-        TELA.blit(IMG_VACA,
-                  (vaca.x - IMG_VACA.get_width() / 2,
-                   Y_VACA - IMG_VACA.get_height() / 2))
+    TELA.blit(IMG_VACA,
+        (vaca.x - IMG_VACA.get_width() / 2,
+         Y_VACA - IMG_VACA.get_height() / 2))
+
+'''
+desenha_zumbi: Zumbi -> Imagem
+Desenha o zumbi
+'''
+def desenha_zumbi(zumbi):
+    TELA.blit(IMG_ZUMBI,
+              (zumbi.x - IMG_ZUMBI.get_width() / 2,
+               zumbi.y - IMG_ZUMBI.get_height() / 2))
+
+##screen.blit(background, backgroundRect)
+
+'''
+desenha_fundo: Background -> Imagem
+Desenha o background
+'''
+def desenha_fundo():
+    TELA.blit(IMG_BACKGROUND,
+              (LARGURA,
+              ALTURA))
+
+'''
+desenha_jogo: Jogo -> Imagem
+Desenha o jogo
+'''
+def desenha_jogo(jogo):
+    if jogo.game_over:
+        fonte = pg.font.SysFont("monospace", 40)
+
+        texto = fonte.render("VOCE PERDEU, OTARIO", 1, (255, 0, 0))
+
+        TELA.blit(texto, (LARGURA / 2 - 20, ALTURA / 2 - 20))
+
     else:
-        TELA.blit(IMG_VACA,
-                  (vaca.x - IMG_VACA.get_width() / 2,
-                   Y_VACA - IMG_VACA.get_height() / 2))
+        desenha_vaca(jogo.vaca)
+        desenha_zumbi(jogo.zumbi)
+        desenha_fundo()
+
+'''
+trata_tecla_vaca: Vaca, EventoTecla -> Vaca
+Quando teclar espaço, inverte a direção da vaca
+'''
+def trata_tecla_vaca(vaca, tecla):
+    if tecla == pg.K_SPACE:
+        vaca.dx = - vaca.dx
+    return vaca
+
+
+'''
+trata_tecla: Jogo, EventoTecla -> Jogo
+Trata tecla geral
+'''
+def trata_tecla(jogo, tecla):
+    if jogo.game_over and tecla == pg.K_SPACE :
+        return JOGO_INICIAL
+    else:
+        jogo.vaca = trata_tecla_vaca(jogo.vaca, tecla)
+        return jogo
+
+
+''' ================= '''
+''' Main (Big Bang):
+'''
+
+''' Jogo -> Jogo '''
+''' inicie o mundo com main(JOGO_INICIAL) '''
+
+def main(inic):
+    big_bang(inic, tela=TELA,
+             quando_tick=mover_jogo,
+             desenhar=desenha_jogo,
+             quando_tecla=trata_tecla)
+
+main(JOGO_INICIAL)
+
