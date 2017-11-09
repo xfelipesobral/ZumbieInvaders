@@ -35,6 +35,9 @@ PAREDE_DIREITA = LARGURA - IMG_VACA.get_width()/2
 PAREDE_CIMA = 0
 PAREDE_BAIXO = ALTURA
 
+DX = 3
+G = 3
+
 '''==================='''
 '''# Definições de dados: '''
 
@@ -278,8 +281,8 @@ Desenha o background
 '''
 def desenha_fundo():
     TELA.blit(IMG_BACKGROUND,
-              (LARGURA,
-              ALTURA))
+              (0,
+              0))
 
 '''
 desenha_jogo: Jogo -> Imagem
@@ -294,19 +297,23 @@ def desenha_jogo(jogo):
         TELA.blit(texto, (LARGURA / 2 - 20, ALTURA / 2 - 20))
 
     else:
+        desenha_fundo()
         desenha_vaca(jogo.vaca)
         desenha_zumbi(jogo.zumbi)
-        desenha_fundo()
+
+
 
 '''
 trata_tecla_vaca: Vaca, EventoTecla -> Vaca
 Quando teclar espaço, inverte a direção da vaca
 '''
 def trata_tecla_vaca(vaca, tecla):
-    if tecla == pg.K_SPACE:
-        vaca.dx = - vaca.dx
-    return vaca
+    if tecla == pg.K_LEFT:
+        vaca.dx = -DX
+    elif tecla == pg.K_RIGHT:
+        vaca.dx = DX
 
+    return vaca
 
 '''
 trata_tecla: Jogo, EventoTecla -> Jogo
@@ -318,6 +325,24 @@ def trata_tecla(jogo, tecla):
     else:
         jogo.vaca = trata_tecla_vaca(jogo.vaca, tecla)
         return jogo
+
+'''                                             
+trata_solta_tecla: Vaca, EventoTecla -> Vaca    
+Trata solta tecla vaca                 
+'''
+def trata_solta_tecla_vaca(vaca, tecla):
+   if tecla == pg.K_LEFT or tecla == pg.K_RIGHT:
+       vaca.dx = 0
+   return vaca
+
+'''
+trata_tecla: Jogo, EventoTecla -> Jogo
+Trata tecla geral
+'''
+def trata_solta_tecla(jogo, tecla):
+    trata_solta_tecla_vaca(jogo.vaca, tecla)
+    return jogo
+
 
 
 ''' ================= '''
