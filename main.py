@@ -3,6 +3,7 @@
 
 from universe import *
 import math
+import random
 
 ''' ZUMBIE INVADERS 0.1 '''
 
@@ -14,17 +15,25 @@ TELA = pg.display.set_mode((LARGURA, ALTURA))
 
 try:
     IMG_VACA = pg.image.load('img/vaca.png')
-    IMG_ZUMBI = pg.image.load('img/zumbi.gif').convert()
-    IMG_BALA_V = pg.image.load('img/vaca.png')
-    IMG_BALA_Z = pg.image.load('img/vaca.png')
+    IMG_ZUMBI = pg.image.load('img/zumbi.gif')
     IMG_BACKGROUND = pg.image.load('img/bg.jpg')
+    IMG_BALA_Z = pg.image.load('img/bala.png')
+    IMG_BALA_V = pg.image.load('img/leite.png')
 
 except:
     IMG_VACA = pg.Surface((100,100),pg.SRCALPHA)
     IMG_ZUMBI = pg.Surface((100,100),pg.SRCALPHA)
+    IMG_BACKGROUND = pg.Surface((100,100),pg.SRCALPHA)
+    IMG_BALA_Z = pg.Surface((100,100),pg.SRCALPHA)
+    IMG_BALA_V = pg.Surface((100,100),pg.SRCALPHA)
+    print("IMAGENS NÃO CARREGADAS!!!")
 
-IMG_VACA = pg.transform.scale(IMG_VACA, (50, 50))
+IMG_VACA = pg.transform.scale(IMG_VACA, (50, 50)) 
 IMG_ZUMBI = pg.transform.scale(IMG_ZUMBI, (50, 50))
+IMG_ZUMBI_V = pg.transform.flip(IMG_ZUMBI, True, False)
+
+IMG_BALA_Z = pg.transform.scale(IMG_BALA_Z,(10,20))
+IMG_BALA_V = pg.transform.scale(IMG_BALA_V, (10,20))
 
 Y_VACA = 600 - IMG_VACA.get_width()/2
 Y_ZUMBI = ALTURA/2
@@ -35,8 +44,11 @@ PAREDE_DIREITA = LARGURA - IMG_VACA.get_width()/2
 PAREDE_CIMA = 0
 PAREDE_BAIXO = ALTURA
 
-DX = 3
+BALA_ZUMBI = 0
+
+DX = 10
 G = 3
+DV = 30
 
 '''==================='''
 '''# Definições de dados: '''
@@ -51,7 +63,7 @@ a cada tick no eixo x, chamado de dx
 Exemplos:
 '''
 
-VACA_INICIAL = Vaca(LARGURA/2, 3)
+VACA_INICIAL = Vaca(LARGURA/2, 0)
 VACA_FINAL = Vaca(PAREDE_DIREITA, 3)
 VACA_FINAL2 = Vaca(PAREDE_ESQUERDA, -3)
 
@@ -80,6 +92,7 @@ ZUMBI_FINAL = Zumbi(PAREDE_DIREITA, PAREDE_DIREITA, 1, 1)
 ZUMBI_VOLTANDO = Zumbi(PAREDE_DIREITA, PAREDE_DIREITA, -1, -1)
 ZUMBI_FINAL_VOLTANDO = Zumbi(PAREDE_ESQUERDA, PAREDE_ESQUERDA, -1, -1)
 
+##ZU1 = Zumbi(PAREDE_ESQUERDA+(IMG_ZUMBI.get_width()/2), PAREDE_ESQUERDA+(IMG_ZUMBI.get_width()/2), 1, 1)
 
 '''
 Template para funções que recebem Zumbi:
@@ -92,18 +105,17 @@ def fn_para_zumbi(z):
 '''
 
 
-Leite = namedlist("Leite", "y, dy")
+Leite = namedlist("Leite", "x, y, dy")
 
 '''
-Leite pode ser criado como: Leite(Int[POSICAO_VACA, PAREDE_CIMA], Int)
+Leite pode ser criado como: Leite(Int[vaca.x], Int[Y_VACA], Int)
 Interp.: Y representa a posicao do leite, e dy representa o deslocamento
 a cada tick respectivamente no eixo y
 Exemplos:
 '''
 
-LEITE_INICIAL = Leite(0, 0)
-##LEITE_ATIRAR = Leite(vaca, 35)
-LEITE_FINAL = Leite(PAREDE_CIMA, 35)
+LEITE_INICIAL = Leite(PAREDE_BAIXO, PAREDE_BAIXO, 0)
+LEITE_FINAL = Leite(PAREDE_CIMA, PAREDE_CIMA,  0)
 
 '''
 Template para funções que recebem Leite:
@@ -115,18 +127,17 @@ def fn_para_leite(l):
         l.dy
 '''
 
-Bala = namedlist("Bala", "y, dy")
+Bala = namedlist("Bala", "x, y, dy")
 
 '''
-Bala pode ser criada como: Bala(Int[POSICAO_ZUMBI, PAREDE_BAIXO], Int)
+Bala pode ser criada como: Bala(Int[zumbi.x], Int[vaca.x], Int)
 Interp.: Y representa a posicao do leite, e dy representa o deslocamento
 a cada tick respectivamente no eixo y
 Exemplos:
 '''
 
-BALA_INICIAL = Bala(0, 0)
-##BALA_ATIRAR = Bala(zumbi, 20)
-BALA_FINAL = Bala(PAREDE_BAIXO, -20)
+BALA_INICIAL = Bala(PAREDE_CIMA, PAREDE_CIMA, 2)
+BALA_FINAL = Bala(PAREDE_BAIXO, PAREDE_BAIXO, 0)
 
 '''
 Template para funções que recebem Bala:
@@ -138,18 +149,19 @@ def fn_para_bala(b):
         b.dy
 '''
 
-Jogo = namedlist("Jogo", "vaca, zumbi, bala, leite, game_over")
+Jogo = namedlist("Jogo", "vaca, zumbi, bala, leite, game_over, game_ganho")
 
 ''' 
 Jogo eh criado como: Jogo(Vaca, List<Zumbi>, Bala, Leite, Boolean)
 interp. Um jogo é composto por uma vaca, vários zumbis, tiro da vaca(leite), tiro do zumbi(bala),
-e uma flag (game_over) que indica se o jogo está acontecendo
+e uma flag (game_over ou game_ganho) que indica se o jogo está acontecendo
 ou nao
 Exemplos:
 '''
 
-JOGO_INICIAL = Jogo(VACA_INICIAL, ZUMBI_INICIAL, BALA_INICIAL, LEITE_INICIAL, False)
-JOGO_GAME_OVER = Jogo(VACA_INICIAL, ZUMBI_INICIAL, BALA_INICIAL, LEITE_INICIAL, True)
+JOGO_INICIAL = Jogo(VACA_INICIAL, ZUMBI_INICIAL, BALA_INICIAL, LEITE_INICIAL, False, False)
+JOGO_GAME_OVER = Jogo(VACA_INICIAL, ZUMBI_INICIAL, BALA_INICIAL, LEITE_INICIAL, True, False)
+JOGO_GAME_GANHO = Jogo(VACA_INICIAL, ZUMBI_INICIAL, BALA_INICIAL, LEITE_INICIAL, False, True)
 
 '''
 Template para funcao que recebe Jogo:
@@ -175,8 +187,8 @@ def mover_vaca(vaca):
     else:
         #calcula novo dx
         if (vaca.x == PAREDE_DIREITA and vaca.dx > 0) \
-                or (vaca.x == PAREDE_ESQUERDA and vaca.dx < 0):  #se vaca bateu na parede
-            vaca.dx = - vaca.dx
+                or (vaca.x == PAREDE_ESQUERDA and vaca.dx < 0):  
+            vaca.dx = 0;
         #usar depurador (debugger)
 
         #calcula novo x
@@ -195,12 +207,13 @@ Mover o Zumbi no eixo x usando o dx
 '''
 def mover_zumbi(zumbi):
     if zumbi.x < 0 or zumbi.x > LARGURA:
-        return "Erro: vaca invalida"
+        return "Erro: zumbi invalida"
     else:
         #calcula novo dx
         if (zumbi.x == PAREDE_DIREITA and zumbi.dx > 0) \
-                or (zumbi.x == PAREDE_ESQUERDA and zumbi.dx < 0):  #se vaca bateu na parede
+                or (zumbi.x == PAREDE_ESQUERDA and zumbi.dx < 0):  
             zumbi.dx = - zumbi.dx
+            zumbi.y = zumbi.y+80
         #usar depurador (debugger)
 
         #calcula novo x
@@ -212,6 +225,51 @@ def mover_zumbi(zumbi):
             zumbi.x = PAREDE_ESQUERDA
 
         return zumbi
+
+def mover_leite(leite):
+    if leite.y < 0 or leite.y > ALTURA:
+        return "Erro: leite invalida"
+    else:
+        #calcula novo dy
+        if (leite.y == PAREDE_BAIXO and leite.dy > 0):
+            leite.dy = - leite.dy
+        if (leite.y == PAREDE_CIMA and leite.dy < 0):  
+            leite.dy = 0
+            leite.y = PAREDE_BAIXO
+        #usar depurador (debugger)
+
+        #calcula novo y
+        leite.y = leite.y + leite.dy
+
+        if leite.y > PAREDE_BAIXO:
+            leite.y = PAREDE_BAIXO
+        elif leite.y < PAREDE_CIMA:
+            leite.y = PAREDE_CIMA
+
+        return leite
+
+def mover_bala(bala):
+    if bala.y < 0 or bala.y > ALTURA:
+        return "Erro: bala invalida"
+    else:
+        #calcula novo dy
+        if (bala.y == PAREDE_CIMA and bala.dy > 0):
+            bala.dy = + bala.dy
+        if (bala.y == PAREDE_BAIXO and bala.dy < 0):  
+            bala.dy = 0
+            ##bala.y = PAREDE_CIMA
+        #usar depurador (debugger)
+
+        #calcula novo y
+        bala.y = bala.y + bala.dy
+
+        if bala.y > PAREDE_BAIXO:
+            bala.y = PAREDE_BAIXO
+        elif bala.y < PAREDE_CIMA:
+            bala.y = PAREDE_CIMA
+
+        return bala
+
 
 ### ADICIONAR FUNÇÃO DE COLISÃO ###
 '''distancia: Int Int Int Int -> Float
@@ -226,14 +284,30 @@ def distancia(x1, y1, x2, y2):
 colidirem: Vaca, Chupacabra -> Boolean
 Verifica se a vaca e o chupacabra colidiram
 '''
-def colidirem(vaca, zumbi):
+def colidirem(vaca, leite, bala, zumbi):
     raio1 = IMG_VACA.get_width()/2
     raio2 = IMG_ZUMBI.get_width()/2
+    raio3 = IMG_BALA_V.get_width()/2
+    raio4 = IMG_BALA_Z.get_width()/2
+
+    ## COLISÕES QUE FAZEM PERDER
     d = distancia(vaca.x, Y_VACA, zumbi.x, zumbi.y)
     if d <= raio1 + raio2:
-        return True
-    #else
-    return False
+        return 1
+
+    d = distancia(bala.x, bala.y, vaca.x, Y_VACA)
+    if d <= raio1 + raio4:
+        return 1
+
+    if zumbi.y >= PAREDE_BAIXO-raio2:
+        return 1
+
+    ##COLISÕES QUE FAZEM GANHAR
+    d = distancia(leite.x, leite.y, zumbi.x, zumbi.y)
+    if d <= raio3 + raio2:
+        return 2
+
+    return 0
 
 '''
 mover_jogo: Jogo -> Jogo
@@ -243,12 +317,29 @@ A funcao que eh chamada a cada tick para o jogo
 def mover_jogo(jogo):
 
     for zumbi in jogo.zumbi:
-        if colidirem(jogo.vaca, jogo.zumbi):
+        if colidirem(jogo.vaca, jogo.leite, jogo.bala, jogo.zumbi) == 1:
             jogo.game_over = True
+            return jogo
+        if colidirem(jogo.vaca, jogo.leite, jogo.bala, jogo.zumbi) == 2:
+            jogo.game_ganho = True
             return jogo
 
     #else
     mover_vaca(jogo.vaca)
+
+    jogo.leite.x = jogo.vaca.x
+    mover_leite(jogo.leite)
+
+
+    if jogo.bala.y>=PAREDE_BAIXO:
+        jogo.bala.x = jogo.zumbi.x 
+        jogo.bala.y = jogo.zumbi.y
+
+
+    if jogo.bala.y == 0:    
+        jogo.bala.x = jogo.zumbi.x
+
+    mover_bala(jogo.bala)
 
     for zumbi in jogo.zumbi:
         mover_zumbi(jogo.zumbi)  # funcao auxiliar (helper)
@@ -262,27 +353,48 @@ Desenha a vaca na tela
 def desenha_vaca(vaca):
     TELA.blit(IMG_VACA,
         (vaca.x - IMG_VACA.get_width() / 2,
-         Y_VACA - IMG_VACA.get_height() / 2))
+        Y_VACA - IMG_VACA.get_height() / 2))
+
+
 
 '''
 desenha_zumbi: Zumbi -> Imagem
 Desenha o zumbi
 '''
 def desenha_zumbi(zumbi):
-    TELA.blit(IMG_ZUMBI,
-              (zumbi.x - IMG_ZUMBI.get_width() / 2,
-               zumbi.y - IMG_ZUMBI.get_height() / 2))
+    if zumbi.dx < 0:
+        TELA.blit(IMG_ZUMBI_V,
+                  (zumbi.x - IMG_ZUMBI_V.get_width()/2,
+                   zumbi.y - IMG_ZUMBI_V.get_height()/2))
+    else:
+        TELA.blit(IMG_ZUMBI,
+                  (zumbi.x- IMG_ZUMBI.get_width()/2,
+                   zumbi.y - IMG_ZUMBI.get_height()/2))
 
 ##screen.blit(background, backgroundRect)
 
 '''
-desenha_fundo: Background -> Imagem
-Desenha o background
+desenha_fundo: Background -> Image
+mDesenha o background
 '''
 def desenha_fundo():
     TELA.blit(IMG_BACKGROUND,
               (0,
               0))
+
+'''
+desenha_leite: Leite -> Imagem
+Desenha o tiro da vaca
+'''
+def desenha_leite(leite):
+    TELA.blit(IMG_BALA_V,(leite.x - IMG_BALA_V.get_width()/2, leite.y - IMG_BALA_V.get_height()/2))
+
+'''
+desenha_bala: Bala -> Imagem
+desenha o tiro do Zumbi
+'''
+def desenha_bala(bala):
+    TELA.blit(IMG_BALA_Z,(bala.x - IMG_BALA_Z.get_width()/2, bala.y - IMG_BALA_Z.get_width()/2))
 
 '''
 desenha_jogo: Jogo -> Imagem
@@ -291,13 +403,18 @@ Desenha o jogo
 def desenha_jogo(jogo):
     if jogo.game_over:
         fonte = pg.font.SysFont("monospace", 40)
+        texto = fonte.render("VOCE PERDEU", 1, (255, 0, 0))
+        TELA.blit(texto, ((LARGURA/2)-110, ALTURA/2))
 
-        texto = fonte.render("VOCE PERDEU, OTARIO", 1, (255, 0, 0))
-
-        TELA.blit(texto, (LARGURA / 2 - 20, ALTURA / 2 - 20))
+    elif jogo.game_ganho:
+        fonte = pg.font.SysFont("monospace", 40)
+        texto = fonte.render("VOCE GANHOU", 1, (255, 0, 0))
+        TELA.blit(texto, ((LARGURA/2)-110, ALTURA/2))
 
     else:
         desenha_fundo()
+        desenha_bala(jogo.bala)
+        desenha_leite(jogo.leite)
         desenha_vaca(jogo.vaca)
         desenha_zumbi(jogo.zumbi)
 
@@ -305,13 +422,41 @@ def desenha_jogo(jogo):
 
 '''
 trata_tecla_vaca: Vaca, EventoTecla -> Vaca
-Quando teclar espaço, inverte a direção da vaca
+Quando teclar as setas direcionais a vaca se movimenta
 '''
 def trata_tecla_vaca(vaca, tecla):
-    if tecla == pg.K_LEFT:
+    if (tecla == pg.K_LEFT) or (tecla == pg.K_LEFT and pg.K_SPACE):
         vaca.dx = -DX
-    elif tecla == pg.K_RIGHT:
+
+    elif (tecla == pg.K_RIGHT) or (tecla == pg.K_RIGHT and pg.K_SPACE):
         vaca.dx = DX
+
+    return vaca
+
+'''
+trata_tecla_leite: Leite, EventoTecla -> "tiro" leite
+Quando teclar espaço, a vaca atira o leite
+'''
+def trata_tecla_leite(leite, tecla):
+    if leite.y != PAREDE_BAIXO:
+        return leite
+    else:
+        if tecla == pg.K_SPACE:
+            leite.dy = DV
+
+    return leite
+
+'''                                             
+trata_solta_tecla: Vaca, EventoTecla -> Vaca    
+Trata solta tecla vaca   
+
+se a tecla for ESPAÇO, ele apenas retorna a vaca, caso for outra ele para              
+'''
+def trata_solta_tecla_vaca(vaca, tecla):
+    if(tecla==pg.K_SPACE):
+        return vaca
+
+    vaca.dx = 0
 
     return vaca
 
@@ -319,29 +464,26 @@ def trata_tecla_vaca(vaca, tecla):
 trata_tecla: Jogo, EventoTecla -> Jogo
 Trata tecla geral
 '''
-def trata_tecla(jogo, tecla):
-    if jogo.game_over and tecla == pg.K_SPACE :
-        return JOGO_INICIAL
-    else:
-        jogo.vaca = trata_tecla_vaca(jogo.vaca, tecla)
-        return jogo
-
-'''                                             
-trata_solta_tecla: Vaca, EventoTecla -> Vaca    
-Trata solta tecla vaca                 
-'''
-def trata_solta_tecla_vaca(vaca, tecla):
-   if tecla == pg.K_LEFT or tecla == pg.K_RIGHT:
-       vaca.dx = 0
-   return vaca
+def trata_solta_tecla(jogo, tecla):
+    jogo.vaca = trata_solta_tecla_vaca(jogo.vaca, tecla)
+    return jogo
 
 '''
 trata_tecla: Jogo, EventoTecla -> Jogo
 Trata tecla geral
 '''
-def trata_solta_tecla(jogo, tecla):
-    trata_solta_tecla_vaca(jogo.vaca, tecla)
-    return jogo
+def trata_tecla(jogo, tecla):
+
+    ## PRECISA ARRUMAR ESSA PARTE
+    if (jogo.game_over == True)  and tecla == pg.K_F1:
+        return JOGO_INICIAL
+    if (jogo.game_ganho == True) and tecla == pg.K_F1:
+        return JOGO_INICIAL
+    ## -----------
+    else:
+        jogo.vaca = trata_tecla_vaca(jogo.vaca, tecla)
+        jogo.leite = trata_tecla_leite(jogo.leite, tecla)
+        return jogo
 
 
 
@@ -356,7 +498,8 @@ def main(inic):
     big_bang(inic, tela=TELA,
              quando_tick=mover_jogo,
              desenhar=desenha_jogo,
-             quando_tecla=trata_tecla)
+             quando_tecla=trata_tecla,
+             quando_solta_tecla=trata_solta_tecla)
 
 main(JOGO_INICIAL)
 
