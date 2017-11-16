@@ -5,7 +5,7 @@ from universe import *
 import math
 import random
 
-''' ZUMBIE INVADERS 0.1 '''
+''' ZUMBIE INVADERS 0.0.4 '''
 
 '''==================='''
 '''# Preparacao da Tela e Constantes: '''
@@ -36,7 +36,6 @@ IMG_BALA_Z = pg.transform.scale(IMG_BALA_Z,(10,20))
 IMG_BALA_V = pg.transform.scale(IMG_BALA_V, (10,20))
 
 Y_VACA = 600 - IMG_VACA.get_width()/2
-Y_ZUMBI = ALTURA/2
 
 PAREDE_ESQUERDA = 0 + IMG_VACA.get_width()/2
 PAREDE_DIREITA = LARGURA - IMG_VACA.get_width()/2
@@ -44,10 +43,7 @@ PAREDE_DIREITA = LARGURA - IMG_VACA.get_width()/2
 PAREDE_CIMA = 0
 PAREDE_BAIXO = ALTURA
 
-BALA_ZUMBI = 0
-
 DX = 10
-G = 3
 DV = 30
 
 '''==================='''
@@ -185,12 +181,6 @@ def mover_vaca(vaca):
     if vaca.x < 0 or vaca.x > LARGURA:
         return "Erro: vaca invalida"
     else:
-        #calcula novo dx
-        if (vaca.x == PAREDE_DIREITA and vaca.dx > 0) \
-                or (vaca.x == PAREDE_ESQUERDA and vaca.dx < 0):  
-            vaca.dx = 0;
-        #usar depurador (debugger)
-
         #calcula novo x
         vaca.x = vaca.x + vaca.dx
 
@@ -252,14 +242,6 @@ def mover_bala(bala):
     if bala.y < 0 or bala.y > ALTURA:
         return "Erro: bala invalida"
     else:
-        #calcula novo dy
-        if (bala.y == PAREDE_CIMA and bala.dy > 0):
-            bala.dy = + bala.dy
-        if (bala.y == PAREDE_BAIXO and bala.dy < 0):  
-            bala.dy = 0
-            ##bala.y = PAREDE_CIMA
-        #usar depurador (debugger)
-
         #calcula novo y
         bala.y = bala.y + bala.dy
 
@@ -277,8 +259,6 @@ Calcula a distancia entre dois pontos
 '''
 def distancia(x1, y1, x2, y2):
     return math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2)
-
-
 
 '''
 colidirem: Vaca, Chupacabra -> Boolean
