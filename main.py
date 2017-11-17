@@ -28,23 +28,26 @@ except:
     IMG_BALA_V = pg.Surface((100,100),pg.SRCALPHA)
     print("IMAGENS NÃO CARREGADAS!!!")
 
+## CONSTANTES DE VACA ##
 IMG_VACA = pg.transform.scale(IMG_VACA, (50, 50)) 
-IMG_ZUMBI = pg.transform.scale(IMG_ZUMBI, (50, 50))
-IMG_ZUMBI_V = pg.transform.flip(IMG_ZUMBI, True, False)
-
-IMG_BALA_Z = pg.transform.scale(IMG_BALA_Z,(10,20))
+Y_VACA = 600 - IMG_VACA.get_width()/2 
+DX = 10 # VELOCIDADE VACA
+DV = 30 # VELOCIDADE TIRO DA VACA
 IMG_BALA_V = pg.transform.scale(IMG_BALA_V, (10,20))
 
-Y_VACA = 600 - IMG_VACA.get_width()/2
+## CONSTANTES DE ZUMBI ##
+DZ = 1 # VELOCIDADE ZUMBI
+DZZ = 2 # VELOCIDADE TIRO ZUMBI
+DESLOCAMENTO_ZUMBI = 80 # REPRESENTA O DESLOCAMENTO DO ZUMBI NA LINHA Y
+IMG_ZUMBI = pg.transform.scale(IMG_ZUMBI, (50, 50))
+IMG_ZUMBI_V = pg.transform.flip(IMG_ZUMBI, True, False)
+IMG_BALA_Z = pg.transform.scale(IMG_BALA_Z,(10,20))
 
+## CONSTANTES GERAIS ##
 PAREDE_ESQUERDA = 0 + IMG_VACA.get_width()/2
 PAREDE_DIREITA = LARGURA - IMG_VACA.get_width()/2
-
 PAREDE_CIMA = 0
 PAREDE_BAIXO = ALTURA
-
-DX = 10
-DV = 30
 
 '''==================='''
 '''# Definições de dados: '''
@@ -60,8 +63,8 @@ Exemplos:
 '''
 
 VACA_INICIAL = Vaca(LARGURA/2, 0)
-VACA_FINAL = Vaca(PAREDE_DIREITA, 3)
-VACA_FINAL2 = Vaca(PAREDE_ESQUERDA, -3)
+VACA_FINAL = Vaca(PAREDE_DIREITA, 0)
+VACA_FINAL2 = Vaca(PAREDE_ESQUERDA, 0)
 
 '''
 Template para funções que recebem Vaca:
@@ -74,30 +77,28 @@ def fn_para_vaca(v):
 
 '''
 
-Zumbi = namedlist("Zumbi", "x, y, dx, dy") #Estrutura do Zumbi
+Zumbi = namedlist("Zumbi", "x, y, dx") #Estrutura do Zumbi
 
 '''
-Zumbi pode ser criado como: Zumbi(Int[PAREDE_ESQUERDA, PAREDE_DIREITA], Int[PAREDE_ESQUERDA, PAREDE_DIREITA], Int)
-Interp.: X e Y representa a posicao do zumbi, dx e dy representam o deslocamento
-a cada tick respectivamente no eixo x e y
+Zumbi pode ser criado como: Zumbi(Int[PAREDE_ESQUERDA/PAREDE_DIREITA], Int[PAREDE_ESQUERDA/PAREDE_DIREITA], Int)
+Interp.: X e Y representa a posicao do zumbi, e dx representa o deslocamento
+a cada tick respectivamente no eixo x
 Exemplos:
 '''
 
-ZUMBI_INICIAL = Zumbi(PAREDE_ESQUERDA, PAREDE_ESQUERDA, 1, 1)
-ZUMBI_FINAL = Zumbi(PAREDE_DIREITA, PAREDE_DIREITA, 1, 1)
-ZUMBI_VOLTANDO = Zumbi(PAREDE_DIREITA, PAREDE_DIREITA, -1, -1)
-ZUMBI_FINAL_VOLTANDO = Zumbi(PAREDE_ESQUERDA, PAREDE_ESQUERDA, -1, -1)
-
-##ZU1 = Zumbi(PAREDE_ESQUERDA+(IMG_ZUMBI.get_width()/2), PAREDE_ESQUERDA+(IMG_ZUMBI.get_width()/2), 1, 1)
+ZUMBI_INICIAL = Zumbi(PAREDE_ESQUERDA, PAREDE_ESQUERDA, DZ)
+ZUMBI_FINAL = Zumbi(PAREDE_DIREITA, PAREDE_DIREITA, DZ)
+ZUMBI_VOLTANDO = Zumbi(PAREDE_DIREITA, PAREDE_DIREITA, -DZ)
+ZUMBI_FINAL_VOLTANDO = Zumbi(PAREDE_ESQUERDA, PAREDE_ESQUERDA, -DZ)
 
 '''
 Template para funções que recebem Zumbi:
 def fn_para_zumbi(z):
-    if z.x < 0 or v.x > LARGURA:
+    if z.x < 0 or z.x > LARGURA:
         return "Erro: Zumbi invalido"
     else:
-        ... v.x
-        v.dx
+        ... z.x
+        z.dx
 '''
 
 
@@ -132,8 +133,8 @@ a cada tick respectivamente no eixo y
 Exemplos:
 '''
 
-BALA_INICIAL = Bala(PAREDE_CIMA, PAREDE_CIMA, 2)
-BALA_FINAL = Bala(PAREDE_BAIXO, PAREDE_BAIXO, 0)
+BALA_INICIAL = Bala(PAREDE_CIMA, PAREDE_CIMA, DZZ)
+BALA_FINAL = Bala(PAREDE_BAIXO, PAREDE_BAIXO, DZZ)
 
 '''
 Template para funções que recebem Bala:
@@ -202,8 +203,8 @@ def mover_zumbi(zumbi):
         #calcula novo dx
         if (zumbi.x == PAREDE_DIREITA and zumbi.dx > 0) \
                 or (zumbi.x == PAREDE_ESQUERDA and zumbi.dx < 0):  
-            zumbi.dx = - zumbi.dx
-            zumbi.y = zumbi.y+80
+            zumbi.dx = - zumbi.dx ## DEIXA O DX NEGATIVO PARA ELE VOLTAR
+            zumbi.y = zumbi.y+DESLOCAMENTO_ZUMBI ## CONDIÇÃO PARA O ZUMBI DESCER DE LINHA
         #usar depurador (debugger)
 
         #calcula novo x
@@ -224,8 +225,8 @@ def mover_leite(leite):
         if (leite.y == PAREDE_BAIXO and leite.dy > 0):
             leite.dy = - leite.dy
         if (leite.y == PAREDE_CIMA and leite.dy < 0):  
-            leite.dy = 0
-            leite.y = PAREDE_BAIXO
+            leite.dy = 0 ## CASO CHEGUE NA PAREDE CIMA O DV ZERA
+            leite.y = PAREDE_BAIXO ## E VOLTA PARA SEU LUGAR PRINCIPAL
         #usar depurador (debugger)
 
         #calcula novo y
@@ -271,19 +272,19 @@ def colidirem(vaca, leite, bala, zumbi):
     raio4 = IMG_BALA_Z.get_width()/2
 
     ## COLISÕES QUE FAZEM PERDER
-    d = distancia(vaca.x, Y_VACA, zumbi.x, zumbi.y)
+    d = distancia(vaca.x, Y_VACA, zumbi.x, zumbi.y) ## VACA /=/ ZUMBI == PERDEU
     if d <= raio1 + raio2:
         return 1
 
-    d = distancia(bala.x, bala.y, vaca.x, Y_VACA)
+    d = distancia(bala.x, bala.y, vaca.x, Y_VACA) ## BALA /=/ VACA == PERDEU
     if d <= raio1 + raio4:
         return 1
 
-    if zumbi.y >= PAREDE_BAIXO-raio2:
+    if zumbi.y >= PAREDE_BAIXO-raio2: ## ZUMBI X == PAREDE BAIXO |== PERDEU
         return 1
 
     ##COLISÕES QUE FAZEM GANHAR
-    d = distancia(leite.x, leite.y, zumbi.x, zumbi.y)
+    d = distancia(leite.x, leite.y, zumbi.x, zumbi.y) ## LEITE /=/ ZUMBI = GANHOU
     if d <= raio3 + raio2:
         return 2
 
@@ -307,15 +308,20 @@ def mover_jogo(jogo):
     #else
     mover_vaca(jogo.vaca)
 
-    jogo.leite.x = jogo.vaca.x
+
+    # CASO O LEITE ESTEJA NO Y INICIAL
+    if jogo.leite.y >= PAREDE_BAIXO-(IMG_VACA.get_height()):
+        jogo.leite.x = jogo.vaca.x #SE SIM, ELE RECEBE X DA VACA
+    
+
     mover_leite(jogo.leite)
 
-
+    # SE O Y FOR > QUE A PAREDE BAIXO | ESSA CONDIÇÃO FAZ COM QUE A BALA SAIA SEMPRE DO ZUMBI
     if jogo.bala.y>=PAREDE_BAIXO:
-        jogo.bala.x = jogo.zumbi.x 
-        jogo.bala.y = jogo.zumbi.y
+        jogo.bala.x = jogo.zumbi.x # X DA BALA RECEBE X DO ZUMBI
+        jogo.bala.y = jogo.zumbi.y # Y DA BALA RECEBE Y DO ZUMBI
 
-
+    # SE O Y DA BALA == 0, OU SEJA COMEÇAR PARA FORA DO JOGO; A BALA RECEBE X DO ZUMBI
     if jogo.bala.y == 0:    
         jogo.bala.x = jogo.zumbi.x
 
@@ -382,13 +388,17 @@ Desenha o jogo
 '''
 def desenha_jogo(jogo):
     if jogo.game_over:
+        desenha_fundo()
+        desenha_vaca(jogo.vaca)
         fonte = pg.font.SysFont("monospace", 40)
-        texto = fonte.render("VOCE PERDEU", 1, (255, 0, 0))
+        texto = fonte.render("VOCE PERDEU", 1, (255, 255, 255))
         TELA.blit(texto, ((LARGURA/2)-110, ALTURA/2))
 
     elif jogo.game_ganho:
+        desenha_fundo()
+        desenha_vaca(jogo.vaca)
         fonte = pg.font.SysFont("monospace", 40)
-        texto = fonte.render("VOCE GANHOU", 1, (255, 0, 0))
+        texto = fonte.render("VOCE GANHOU", 1, (255, 255, 255))
         TELA.blit(texto, ((LARGURA/2)-110, ALTURA/2))
 
     else:
