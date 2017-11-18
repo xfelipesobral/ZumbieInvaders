@@ -37,7 +37,7 @@ IMG_BALA_V = pg.transform.scale(IMG_BALA_V, (10,20))
 
 ## CONSTANTES DE ZUMBI ##
 DZ = 1 # VELOCIDADE ZUMBI
-DZZ = 2 # VELOCIDADE TIRO ZUMBI
+DZZ = 1 # VELOCIDADE TIRO ZUMBI
 DESLOCAMENTO_ZUMBI = 80 # REPRESENTA O DESLOCAMENTO DO ZUMBI NA LINHA Y
 IMG_ZUMBI = pg.transform.scale(IMG_ZUMBI, (50, 50))
 IMG_ZUMBI_V = pg.transform.flip(IMG_ZUMBI, True, False)
@@ -90,6 +90,10 @@ ZUMBI_INICIAL = Zumbi(PAREDE_ESQUERDA, PAREDE_ESQUERDA, DZ)
 ZUMBI_FINAL = Zumbi(PAREDE_DIREITA, PAREDE_DIREITA, DZ)
 ZUMBI_VOLTANDO = Zumbi(PAREDE_DIREITA, PAREDE_DIREITA, -DZ)
 ZUMBI_FINAL_VOLTANDO = Zumbi(PAREDE_ESQUERDA, PAREDE_ESQUERDA, -DZ)
+
+ZUMBI1 = Zumbi(PAREDE_ESQUERDA +70, PAREDE_CIMA + (IMG_ZUMBI.get_height())/2, DZ)
+ZUMBI2 = Zumbi(PAREDE_ESQUERDA, PAREDE_BAIXO / 8, DZ)
+ZUMBI3 = Zumbi(PAREDE_ESQUERDA + 70,  PAREDE_BAIXO / 8, DZ)
 
 '''
 Template para funções que recebem Zumbi:
@@ -146,7 +150,9 @@ def fn_para_bala(b):
         b.dy
 '''
 
-Jogo = namedlist("Jogo", "vaca, zumbi, bala, leite, game_over, game_ganho")
+Jogo = namedlist("Jogo", "vaca, zumbis, bala, leite, game_over, game_ganho")
+
+
 
 ''' 
 Jogo eh criado como: Jogo(Vaca, List<Zumbi>, Bala, Leite, Boolean)
@@ -156,7 +162,7 @@ ou nao
 Exemplos:
 '''
 
-JOGO_INICIAL = Jogo(VACA_INICIAL, ZUMBI_INICIAL, BALA_INICIAL, LEITE_INICIAL, False, False)
+JOGO_INICIAL = Jogo(VACA_INICIAL, [ZUMBI_INICIAL, ZUMBI1, ZUMBI2, ZUMBI3], BALA_INICIAL, LEITE_INICIAL, False, False)
 JOGO_GAME_OVER = Jogo(VACA_INICIAL, ZUMBI_INICIAL, BALA_INICIAL, LEITE_INICIAL, True, False)
 JOGO_GAME_GANHO = Jogo(VACA_INICIAL, ZUMBI_INICIAL, BALA_INICIAL, LEITE_INICIAL, False, True)
 
@@ -297,11 +303,11 @@ A funcao que eh chamada a cada tick para o jogo
 '''
 def mover_jogo(jogo):
 
-    for zumbi in jogo.zumbi:
-        if colidirem(jogo.vaca, jogo.leite, jogo.bala, jogo.zumbi) == 1:
+    for zumbi in jogo.zumbis:
+        if colidirem(jogo.vaca, jogo.leite, jogo.bala, zumbi) == 1:
             jogo.game_over = True
             return jogo
-        if colidirem(jogo.vaca, jogo.leite, jogo.bala, jogo.zumbi) == 2:
+        if colidirem(jogo.vaca, jogo.leite, jogo.bala, zumbi) == 2:
             jogo.game_ganho = True
             return jogo
 
@@ -315,20 +321,28 @@ def mover_jogo(jogo):
     
 
     mover_leite(jogo.leite)
-
+    
     # SE O Y FOR > QUE A PAREDE BAIXO | ESSA CONDIÇÃO FAZ COM QUE A BALA SAIA SEMPRE DO ZUMBI
     if jogo.bala.y>=PAREDE_BAIXO:
-        jogo.bala.x = jogo.zumbi.x # X DA BALA RECEBE X DO ZUMBI
-        jogo.bala.y = jogo.zumbi.y # Y DA BALA RECEBE Y DO ZUMBI
+        
+        novaBala = random.randint(0,3)
+        print(novaBala)  
+        jogo.bala.x = jogo.zumbis[novaBala].x
+        jogo.bala.y = jogo.zumbis[novaBala].y # Y DA BALA RECEBE Y DO ZUMBI
 
-    # SE O Y DA BALA == 0, OU SEJA COMEÇAR PARA FORA DO JOGO; A BALA RECEBE X DO ZUMBI
-    if jogo.bala.y == 0:    
-        jogo.bala.x = jogo.zumbi.x
 
-    mover_bala(jogo.bala)
 
-    for zumbi in jogo.zumbi:
-        mover_zumbi(jogo.zumbi)  # funcao auxiliar (helper)
+    for zumbi in jogo.zumbis:
+
+        # SE O Y DA BALA == 0, OU SEJA COMEÇAR PARA FORA DO JOGO; A BALA RECEBE X DO ZUMBI
+        if jogo.bala.y == 0: 
+            novaBala = random.randint(0,2)
+            print(novaBala)  
+            jogo.bala.x = jogo.zumbis[novaBala].x
+
+
+        mover_bala(jogo.bala)
+        mover_zumbi(zumbi)  # funcao auxiliar (helper)
 
     return jogo
 
@@ -406,7 +420,9 @@ def desenha_jogo(jogo):
         desenha_bala(jogo.bala)
         desenha_leite(jogo.leite)
         desenha_vaca(jogo.vaca)
-        desenha_zumbi(jogo.zumbi)
+        
+        for zumbi in jogo.zumbis:
+            desenha_zumbi(zumbi)
 
 
 
