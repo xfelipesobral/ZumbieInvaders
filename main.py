@@ -5,7 +5,7 @@ from universe import *
 import math
 import random
 
-''' ZUMBIE INVADERS 0.0.4 '''
+''' ZUMBIE INVADERS 0.0.5 '''
 
 '''==================='''
 '''# Preparacao da Tela e Constantes: '''
@@ -37,7 +37,7 @@ IMG_BALA_V = pg.transform.scale(IMG_BALA_V, (10,20))
 
 ## CONSTANTES DE ZUMBI ##
 DZ = 1 # VELOCIDADE ZUMBI
-DZZ = 1 # VELOCIDADE TIRO ZUMBI
+DZZ = 2 # VELOCIDADE TIRO ZUMBI
 DESLOCAMENTO_ZUMBI = 80 # REPRESENTA O DESLOCAMENTO DO ZUMBI NA LINHA Y
 IMG_ZUMBI = pg.transform.scale(IMG_ZUMBI, (50, 50))
 IMG_ZUMBI_V = pg.transform.flip(IMG_ZUMBI, True, False)
@@ -90,7 +90,6 @@ ZUMBI_FINAL = Zumbi(PAREDE_DIREITA, PAREDE_DIREITA, DZ)
 ZUMBI_VOLTANDO = Zumbi(PAREDE_DIREITA, PAREDE_DIREITA, -DZ)
 ZUMBI_FINAL_VOLTANDO = Zumbi(PAREDE_ESQUERDA, PAREDE_ESQUERDA, -DZ)
 
-<<<<<<< HEAD
 ## PRIMEIRA LINHA ##
 ZUMBI_INICIAL = Zumbi(PAREDE_ESQUERDA, PAREDE_ESQUERDA, DZ)
 ZUMBI1 = Zumbi(PAREDE_ESQUERDA+70 , PAREDE_CIMA + (IMG_ZUMBI.get_height())/2, DZ)
@@ -103,11 +102,6 @@ ZUMBI6 = Zumbi(PAREDE_ESQUERDA+140, PAREDE_BAIXO/8, DZ)
 ZUMBI7 = Zumbi(PAREDE_ESQUERDA+210, PAREDE_BAIXO/8, DZ)
 
 
-=======
-ZUMBI1 = Zumbi(PAREDE_ESQUERDA +70, PAREDE_CIMA + (IMG_ZUMBI.get_height())/2, DZ)
-ZUMBI2 = Zumbi(PAREDE_ESQUERDA, PAREDE_BAIXO / 8, DZ)
-ZUMBI3 = Zumbi(PAREDE_ESQUERDA + 70,  PAREDE_BAIXO / 8, DZ)
->>>>>>> 918a253926f082e03fca4367fac3da9eb8301c34
 
 '''
 Template para funções que recebem Zumbi:
@@ -177,11 +171,7 @@ ou nao
 Exemplos:
 '''
 
-<<<<<<< HEAD
 JOGO_INICIAL = Jogo(VACA_INICIAL, [ZUMBI7, ZUMBI6, ZUMBI5, ZUMBI4, ZUMBI3, ZUMBI2, ZUMBI1, ZUMBI_INICIAL], BALA_INICIAL, LEITE_INICIAL, False, False)
-=======
-JOGO_INICIAL = Jogo(VACA_INICIAL, [ZUMBI_INICIAL, ZUMBI1, ZUMBI2, ZUMBI3], BALA_INICIAL, LEITE_INICIAL, False, False)
->>>>>>> 918a253926f082e03fca4367fac3da9eb8301c34
 JOGO_GAME_OVER = Jogo(VACA_INICIAL, ZUMBI_INICIAL, BALA_INICIAL, LEITE_INICIAL, True, False)
 JOGO_GAME_GANHO = Jogo(VACA_INICIAL, ZUMBI_INICIAL, BALA_INICIAL, LEITE_INICIAL, False, True)
 
@@ -326,7 +316,6 @@ def mover_jogo(jogo):
 
     for zumbi in jogo.zumbis:
 
-<<<<<<< HEAD
         if colidirem(jogo.vaca, jogo.leite, jogo.bala, zumbi) == 1: ## SE BALA DO ZUMBI OU ZUMBI CHEGAR A VACA_Y == PERDEU
             jogo.game_over = True
             return jogo
@@ -341,15 +330,6 @@ def mover_jogo(jogo):
 
             jogo.zumbis.remove(zumbi)
 
-=======
-    for zumbi in jogo.zumbis:
-        if colidirem(jogo.vaca, jogo.leite, jogo.bala, zumbi) == 1:
-            jogo.game_over = True
-            return jogo
-        if colidirem(jogo.vaca, jogo.leite, jogo.bala, zumbi) == 2:
-            jogo.game_ganho = True
-            return jogo
->>>>>>> 918a253926f082e03fca4367fac3da9eb8301c34
 
     #else
     mover_vaca(jogo.vaca)
@@ -365,7 +345,6 @@ def mover_jogo(jogo):
     # SE O Y FOR > QUE A PAREDE BAIXO | ESSA CONDIÇÃO FAZ COM QUE A BALA SAIA SEMPRE DO ZUMBI
     if jogo.bala.y>=PAREDE_BAIXO:
         
-<<<<<<< HEAD
 
         novaBala = random.randint(0,(zumbis_vivos-1))
         jogo.bala.x = jogo.zumbis[novaBala].x
@@ -381,24 +360,6 @@ def mover_jogo(jogo):
             print(novaBala)  
             jogo.bala.x = jogo.zumbis[novaBala].x
 
-=======
-        novaBala = random.randint(0,3)
-        print(novaBala)  
-        jogo.bala.x = jogo.zumbis[novaBala].x
-        jogo.bala.y = jogo.zumbis[novaBala].y # Y DA BALA RECEBE Y DO ZUMBI
-
-
-
-    for zumbi in jogo.zumbis:
-
-        # SE O Y DA BALA == 0, OU SEJA COMEÇAR PARA FORA DO JOGO; A BALA RECEBE X DO ZUMBI
-        if jogo.bala.y == 0: 
-            novaBala = random.randint(0,2)
-            print(novaBala)  
-            jogo.bala.x = jogo.zumbis[novaBala].x
-
-
->>>>>>> 918a253926f082e03fca4367fac3da9eb8301c34
         mover_bala(jogo.bala)
         mover_zumbi(zumbi)  # funcao auxiliar (helper)
 
