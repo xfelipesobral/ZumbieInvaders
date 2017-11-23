@@ -5,7 +5,17 @@ from universe import *
 import math
 import random
 
-''' ZUMBIE INVADERS 0.0.5 '''
+'''
+
+ZUMBIE INVADERS 0.0.6
+
+DESENVOLVEDORES: LUAN UMERES & FELIPE SOBRAL
+
+
+O QUE FALTA?
+ADIÇÃO DOS FENOS
+*** TIROS SEGUIDOS *** !!! IMPORTANTE
+'''
 
 '''==================='''
 '''# Preparacao da Tela e Constantes: '''
@@ -19,6 +29,7 @@ try:
     IMG_BACKGROUND = pg.image.load('img/bg.jpg')
     IMG_BALA_Z = pg.image.load('img/bala.png')
     IMG_BALA_V = pg.image.load('img/leite.png')
+    IMG_MUNICAO = pg.image.load('img/municao.png')
 
 except:
     IMG_VACA = pg.Surface((100,100),pg.SRCALPHA)
@@ -26,6 +37,7 @@ except:
     IMG_BACKGROUND = pg.Surface((100,100),pg.SRCALPHA)
     IMG_BALA_Z = pg.Surface((100,100),pg.SRCALPHA)
     IMG_BALA_V = pg.Surface((100,100),pg.SRCALPHA)
+    IMG_MUNICAO = pg.Surface((100,100),pg.SRCALPHA)
     print("IMAGENS NÃO CARREGADAS!!!")
 
 ## CONSTANTES DE VACA ##
@@ -34,6 +46,7 @@ Y_VACA = 600 - IMG_VACA.get_width()/2
 DX = 10 # VELOCIDADE VACA
 DV = 30 # VELOCIDADE TIRO DA VACA
 IMG_BALA_V = pg.transform.scale(IMG_BALA_V, (10,20))
+IMG_MUNICAO = pg.transform.scale(IMG_MUNICAO, (25, 25))
 
 ## CONSTANTES DE ZUMBI ##
 DZ = 1 # VELOCIDADE ZUMBI
@@ -48,6 +61,7 @@ PAREDE_ESQUERDA = 0 + IMG_VACA.get_width()/2
 PAREDE_DIREITA = LARGURA - IMG_VACA.get_width()/2
 PAREDE_CIMA = 0
 PAREDE_BAIXO = ALTURA
+
 
 '''==================='''
 '''# Definições de dados: '''
@@ -96,6 +110,7 @@ ZUMBI1 = Zumbi(PAREDE_ESQUERDA+70 , PAREDE_CIMA + (IMG_ZUMBI.get_height())/2, DZ
 ZUMBI2 = Zumbi(PAREDE_ESQUERDA+140, PAREDE_CIMA + (IMG_ZUMBI.get_height())/2, DZ)
 ZUMBI3 = Zumbi(PAREDE_ESQUERDA+210, PAREDE_CIMA + (IMG_ZUMBI.get_height())/2, DZ)
 
+## SEGUNDA LINHA ##
 ZUMBI4 = Zumbi(PAREDE_ESQUERDA    , PAREDE_BAIXO/8, DZ)
 ZUMBI5 = Zumbi(PAREDE_ESQUERDA+70 , PAREDE_BAIXO/8, DZ)
 ZUMBI6 = Zumbi(PAREDE_ESQUERDA+140, PAREDE_BAIXO/8, DZ)
@@ -124,8 +139,13 @@ Exemplos:
 '''
 
 LEITE_INICIAL2 = Leite(PAREDE_BAIXO, PAREDE_BAIXO, 0)
-LEITE_INICIAL = Leite(PAREDE_BAIXO, PAREDE_BAIXO, 0)
 LEITE_FINAL = Leite(PAREDE_CIMA, PAREDE_CIMA,  0)
+
+LEITE_INICIAL = Leite(PAREDE_BAIXO, PAREDE_BAIXO, 0)
+L1 = Leite(PAREDE_BAIXO, PAREDE_BAIXO, 0)
+L2 = Leite(PAREDE_BAIXO, PAREDE_BAIXO, 0)
+L3 = Leite(PAREDE_BAIXO, PAREDE_BAIXO, 0)
+L4 = Leite(PAREDE_BAIXO, PAREDE_BAIXO, 0)
 
 '''
 Template para funções que recebem Leite:
@@ -159,29 +179,39 @@ def fn_para_bala(b):
         b.dy
 '''
 
-Jogo = namedlist("Jogo", "vaca, zumbis, bala, leite, game_over, game_ganho")
+Municao = namedlist("Municao", "x")
+
+'''
+Municao pode ser criada utilizando apenas o valor do eixo X que será gerado na "COLOCAR NOME DA FUNCAO"
+'''
+
+MUNICAO_INICIAL = Municao(PAREDE_ESQUERDA + 70)
+
+
+Jogo = namedlist("Jogo", "vaca, zumbis, bala, leites, municao, game_over, game_ganho")
 
 
 
 ''' 
-Jogo eh criado como: Jogo(Vaca, List<Zumbi>, Bala, Leite, Boolean)
-interp. Um jogo é composto por uma vaca, vários zumbis, tiro da vaca(leite), tiro do zumbi(bala),
-e uma flag (game_over ou game_ganho) que indica se o jogo está acontecendo
+Jogo eh criado como: Jogo(Vaca, List<Zumbi>, Bala, List<Leite>, Municao, Boolean)
+interp. Um jogo é composto por uma vaca, vários zumbis, a vaca tem carga de 5 tiros (5 Leites na lista), tiro do zumbi(bala),
+e duas flagg (game_over ou game_ganho) que indica se o jogo está acontecendo
 ou nao
 Exemplos:
 '''
 
-JOGO_INICIAL = Jogo(VACA_INICIAL, [ZUMBI7, ZUMBI6, ZUMBI5, ZUMBI4, ZUMBI3, ZUMBI2, ZUMBI1, ZUMBI_INICIAL], BALA_INICIAL, LEITE_INICIAL, False, False)
-JOGO_GAME_OVER = Jogo(VACA_INICIAL, ZUMBI_INICIAL, BALA_INICIAL, LEITE_INICIAL, True, False)
-JOGO_GAME_GANHO = Jogo(VACA_INICIAL, ZUMBI_INICIAL, BALA_INICIAL, LEITE_INICIAL, False, True)
+JOGO_INICIAL    = Jogo(VACA_INICIAL, [ZUMBI7, ZUMBI6, ZUMBI5, ZUMBI4, ZUMBI3, ZUMBI2, ZUMBI1, ZUMBI_INICIAL], BALA_INICIAL, [L4, L3, L2, L1, LEITE_INICIAL], MUNICAO_INICIAL, False, False)
+JOGO_GAME_OVER  = Jogo(VACA_INICIAL, [ZUMBI7, ZUMBI6, ZUMBI5, ZUMBI4, ZUMBI3, ZUMBI2, ZUMBI1, ZUMBI_INICIAL], BALA_INICIAL, [L4, L3, L2, L1, LEITE_INICIAL], MUNICAO_INICIAL, True, False)
+JOGO_GAME_GANHO = Jogo(VACA_INICIAL, [ZUMBI7, ZUMBI6, ZUMBI5, ZUMBI4, ZUMBI3, ZUMBI2, ZUMBI1, ZUMBI_INICIAL], BALA_INICIAL, [L4, L3, L2, L1, LEITE_INICIAL], MUNICAO_INICIAL, False, True)
 
 '''
 Template para funcao que recebe Jogo:
 def fn_para_jogo(jogo):
     ... jogo.vaca
-        jogo.zumbi
+        jogo.zumbis
         jogo.bala
-        jogo.leite
+        jogo.leites
+        jogo.municao
         jogo.game_over
 '''
 
@@ -220,7 +250,6 @@ def mover_zumbi(zumbi):
                 or (zumbi.x == PAREDE_ESQUERDA and zumbi.dx < 0):  
             zumbi.dx = - zumbi.dx ## DEIXA O DX NEGATIVO PARA ELE VOLTAR
             zumbi.y = zumbi.y+DESLOCAMENTO_ZUMBI ## CONDIÇÃO PARA O ZUMBI DESCER DE LINHA
-        #usar depurador (debugger)
 
         #calcula novo x
         zumbi.x = zumbi.x + zumbi.dx
@@ -232,6 +261,10 @@ def mover_zumbi(zumbi):
 
         return zumbi
 
+'''
+mover_leite: Leite -> Leite
+Mover o Leite da vaca no eixo y usando o dy
+'''
 def mover_leite(leite):
     if leite.y < 0 or leite.y > ALTURA:
         return "Erro: leite invalida"
@@ -242,7 +275,6 @@ def mover_leite(leite):
         if (leite.y == PAREDE_CIMA and leite.dy < 0):  
             leite.dy = 0 ## CASO CHEGUE NA PAREDE CIMA O DV ZERA
             leite.y = PAREDE_BAIXO ## E VOLTA PARA SEU LUGAR PRINCIPAL
-        #usar depurador (debugger)
 
         #calcula novo y
         leite.y = leite.y + leite.dy
@@ -254,6 +286,10 @@ def mover_leite(leite):
 
         return leite
 
+'''
+mover_bala: Bala -> Bala
+Mover a bala do zumbi no eixo y usando o dy
+'''
 def mover_bala(bala):
     if bala.y < 0 or bala.y > ALTURA:
         return "Erro: bala invalida"
@@ -269,17 +305,61 @@ def mover_bala(bala):
 
         return bala
 
+'''
+municao_respawn: Municao -> Municao
+Caso municao for coletada, ela da respwan em algum lugar do eixo X gerado aleatoriamente
+'''
+def municao_respawn(municao):
+    if municao.x < 0:
+        return "Erro: Municao fora do mapa"
+    else:
+        municao.x = random.randint(PAREDE_ESQUERDA, PAREDE_DIREITA)
 
-### ADICIONAR FUNÇÃO DE COLISÃO ###
-'''distancia: Int Int Int Int -> Float
+        return municao
+
+'''
+recarrega_municao: Leites -> Leites
+Recebe leites da vaca e recarrega ele, acrescentando leites na lista até chegar a 5
+'''
+def recarrega_municao(leites):
+
+    if len(leites) == 0:
+        leites.extend([Leite(PAREDE_BAIXO, PAREDE_BAIXO, 0), Leite(PAREDE_BAIXO, PAREDE_BAIXO, 0), Leite(PAREDE_BAIXO, PAREDE_BAIXO, 0), Leite(PAREDE_BAIXO, PAREDE_BAIXO, 0), Leite(PAREDE_BAIXO, PAREDE_BAIXO, 0)])
+    elif len(leites) >= 10:
+        return leites
+    else:
+        leites.append(Leite(PAREDE_BAIXO, PAREDE_BAIXO, 0))
+
+    return leites 
+
+
+'''
+distancia: Int Int Int Int -> Float
 Calcula a distancia entre dois pontos
 '''
 def distancia(x1, y1, x2, y2):
     return math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2)
 
 '''
-colidirem: Vaca, Chupacabra -> Boolean
-Verifica se a vaca e o chupacabra colidiram
+colidir_municao: Vaca, Municao -> Verifica e chama funcao de RESPAWN ->  Tru or False
+'''
+def colidir_municao(vaca, municao):
+    raio_vaca = IMG_VACA.get_width()/2
+    raio_municao = IMG_MUNICAO.get_width()/2
+
+    d = distancia(vaca.x, Y_VACA, municao.x, Y_VACA)
+    if d <= raio_vaca + raio_municao:
+        municao = municao_respawn(municao)
+        return True
+
+    return False
+
+'''
+colidirem: Vaca, Leite, Bala, Zumbi -> 1 (perdeu) or 2 (ganhou)
+1- Verifica se a vaca e o zumbi colidiram
+2- Verifica se a bala colidiu com a vaca
+3- Verifica se o zumbi colidiu com o Y da vaca
+4- Verifica se o leite da vaca colidiu com o zumbi
 '''
 def colidirem(vaca, leite, bala, zumbi):
     raio1 = IMG_VACA.get_width()/2
@@ -300,70 +380,80 @@ def colidirem(vaca, leite, bala, zumbi):
         return 1
 
     ##COLISÕES QUE FAZEM GANHAR
-    d = distancia(leite.x, leite.y, zumbi.x, zumbi.y) ## LEITE /=/ ZUMBI = GANHOU
-    if d <= raio3 + raio2:
-        return 2
+    if leite != None: 
+        d = distancia(leite.x, leite.y, zumbi.x, zumbi.y) ## LEITE /=/ ZUMBI = GANHOU
+        if d <= raio3 + raio2:
+            return 2
 
     return 0
 
 '''
 mover_jogo: Jogo -> Jogo
 A funcao que eh chamada a cada tick para o jogo
-!!!
 '''
 def mover_jogo(jogo):
     zumbis_vivos = len(jogo.zumbis) ## CONTA QUANTOS ZUMBIS ESTÃO 'VIVOS', QUANTOS ZUMBIS QUE ESTÃO NA LISTA
 
     for zumbi in jogo.zumbis:
-
-        if colidirem(jogo.vaca, jogo.leite, jogo.bala, zumbi) == 1: ## SE BALA DO ZUMBI OU ZUMBI CHEGAR A VACA_Y == PERDEU
+        if colidirem(jogo.vaca, None, jogo.bala, zumbi) == 1: ## SE BALA DO ZUMBI OU ZUMBI CHEGAR A VACA_Y == PERDEU
             jogo.game_over = True
             return jogo
 
-        if colidirem(jogo.vaca, jogo.leite, jogo.bala, zumbi) == 2:
-            jogo.leite = Leite(PAREDE_BAIXO, PAREDE_BAIXO, 0) ## VOLTA A BALA PARA O SEU ESTADO INICIAL
+        for leite in jogo.leites:
+            if colidirem(jogo.vaca, leite, jogo.bala, zumbi) == 2:
+                jogo.leites.remove(leite)
 
-            if zumbis_vivos == 1: ## SE TIVER SÓ UM ZUMBI VIVO, QUANDO ELE MORRER...
+                if zumbis_vivos == 1: ## SE TIVER SÓ UM ZUMBI VIVO, QUANDO ELE MORRER...
+                    jogo.zumbis.remove(zumbi)
+                    jogo.game_ganho = True
+                    return jogo
+
                 jogo.zumbis.remove(zumbi)
-                jogo.game_ganho = True
-                return jogo
-
-            jogo.zumbis.remove(zumbi)
 
 
     #else
     mover_vaca(jogo.vaca)
 
+    if colidir_municao(jogo.vaca, jogo.municao) == True:
+        recarrega_municao(jogo.leites)
 
     # CASO O LEITE ESTEJA NO Y INICIAL
-    if jogo.leite.y >= PAREDE_BAIXO-(IMG_VACA.get_height()):
-        jogo.leite.x = jogo.vaca.x #SE SIM, ELE RECEBE X DA VACA
-    
+    for leite in jogo.leites:
+        if leite.y >= PAREDE_BAIXO-(IMG_VACA.get_height()):
+            leite.x = jogo.vaca.x #SE SIM, ELE RECEBE X DA VACA
 
-    mover_leite(jogo.leite)
+        mover_leite(leite)
+
+        if leite.y == PAREDE_CIMA:
+            jogo.leites.remove(leite)
+
     
     # SE O Y FOR > QUE A PAREDE BAIXO | ESSA CONDIÇÃO FAZ COM QUE A BALA SAIA SEMPRE DO ZUMBI
     if jogo.bala.y>=PAREDE_BAIXO:
         
+        if zumbis_vivos >= 1:
+            novaBala = random.randint(0,(zumbis_vivos-1))
+        else:
+            novaBala = 0
 
-        novaBala = random.randint(0,(zumbis_vivos-1))
-        jogo.bala.x = jogo.zumbis[novaBala].x
+        jogo.bala.x = jogo.zumbis[novaBala].x # X DA BALA RECEBE X DO ZUMBI
         jogo.bala.y = jogo.zumbis[novaBala].y # Y DA BALA RECEBE Y DO ZUMBI
-
-
 
     for zumbi in jogo.zumbis:
 
-        # SE O Y DA BALA == 0, OU SEJA COMEÇAR PARA FORA DO JOGO; A BALA RECEBE X DO ZUMBI
-        if jogo.bala.y == 0: 
-            novaBala = random.randint(0,(zumbis_vivos-1))
-            print(novaBala)  
+        # SE O Y DA BALA == PAREDE_CIMA, OU SEJA COMEÇAR PARA FORA DO JOGO; A BALA RECEBE X DO ZUMBI
+        if jogo.bala.y == PAREDE_CIMA: 
+            novaBala = random.randint(0,(zumbis_vivos-1))  
             jogo.bala.x = jogo.zumbis[novaBala].x
 
-        mover_bala(jogo.bala)
         mover_zumbi(zumbi)  # funcao auxiliar (helper)
 
+    mover_bala(jogo.bala)
+
     return jogo
+
+
+
 
 '''
 desenha_vaca: Vaca -> Imagem
@@ -390,8 +480,6 @@ def desenha_zumbi(zumbi):
                   (zumbi.x- IMG_ZUMBI.get_width()/2,
                    zumbi.y - IMG_ZUMBI.get_height()/2))
 
-##screen.blit(background, backgroundRect)
-
 '''
 desenha_fundo: Background -> Image
 mDesenha o background
@@ -416,6 +504,13 @@ def desenha_bala(bala):
     TELA.blit(IMG_BALA_Z,(bala.x - IMG_BALA_Z.get_width()/2, bala.y - IMG_BALA_Z.get_width()/2))
 
 '''
+desenha_municao: Municao -> Imagem
+desenha a municao da vaca
+'''
+def desenha_municao(municao):
+    TELA.blit(IMG_MUNICAO,(municao.x - IMG_MUNICAO.get_width()/2, Y_VACA - IMG_MUNICAO.get_width()/2))
+
+'''
 desenha_jogo: Jogo -> Imagem
 Desenha o jogo
 '''
@@ -437,11 +532,30 @@ def desenha_jogo(jogo):
     else:
         desenha_fundo()
         desenha_bala(jogo.bala)
-        desenha_leite(jogo.leite)
+        desenha_municao(jogo.municao)
+        
+        for leite in jogo.leites:
+            desenha_leite(leite)
+
         desenha_vaca(jogo.vaca)
         
         for zumbi in jogo.zumbis:
             desenha_zumbi(zumbi)
+
+
+        municao = str(len(jogo.leites))
+        fonte = pg.font.SysFont("monospace", 40)
+
+        if len(jogo.leites)<=3:
+            texto = fonte.render(municao, 1, (255, 0, 0))
+        if len(jogo.leites)>3 and len(jogo.leites)<=7:
+            texto = fonte.render(municao, 1, (255, 255, 255))
+        if len(jogo.leites)>7:
+            texto = fonte.render(municao, 1, (0, 255, 0))
+
+        TELA.blit(texto, (PAREDE_DIREITA-20, PAREDE_BAIXO-40))
+
+
 
 
 
@@ -458,17 +572,15 @@ def trata_tecla_vaca(vaca, tecla):
 
     return vaca
 
+
 '''
 trata_tecla_leite: Leite, EventoTecla -> "tiro" leite
 Quando teclar espaço, a vaca atira o leite
 '''
 def trata_tecla_leite(leite, tecla):
-    if leite.y != PAREDE_BAIXO:
-        return leite
-    else:
-        if tecla == pg.K_SPACE:
-            leite.dy = DV
-
+    if tecla == pg.K_SPACE:
+        leite.dy = DV
+ 
     return leite
 
 '''                                             
@@ -488,7 +600,7 @@ def trata_solta_tecla_vaca(vaca, tecla):
 
 '''
 trata_tecla: Jogo, EventoTecla -> Jogo
-Trata tecla geral
+Trata solta tecla geral
 '''
 def trata_solta_tecla(jogo, tecla):
     jogo.vaca = trata_solta_tecla_vaca(jogo.vaca, tecla)
@@ -508,7 +620,15 @@ def trata_tecla(jogo, tecla):
     ## -----------
     else:
         jogo.vaca = trata_tecla_vaca(jogo.vaca, tecla)
-        jogo.leite = trata_tecla_leite(jogo.leite, tecla)
+
+        ## EM CONSTRUÇÃO ##
+        municao_vaca = len(jogo.leites)
+
+        if municao_vaca != 0:
+            if  jogo.leites[municao_vaca-1].dy == 0:
+                jogo.leites[municao_vaca-1] = trata_tecla_leite(jogo.leites[municao_vaca-1], tecla)
+            
+
         return jogo
 
 
