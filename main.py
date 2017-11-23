@@ -14,7 +14,7 @@ DESENVOLVEDORES: LUAN UMERES & FELIPE SOBRAL
 
 O QUE FALTA?
 ADIÇÃO DOS FENOS
-*** TIROS SEGUIDOS *** !!! IMPORTANTE
+*** TIROS SEGUIDOS *** !!!
 '''
 
 '''==================='''
@@ -61,6 +61,7 @@ PAREDE_ESQUERDA = 0 + IMG_VACA.get_width()/2
 PAREDE_DIREITA = LARGURA - IMG_VACA.get_width()/2
 PAREDE_CIMA = 0
 PAREDE_BAIXO = ALTURA
+Y_FENO = PAREDE_BAIXO/4
 
 
 '''==================='''
@@ -187,10 +188,27 @@ Municao pode ser criada utilizando apenas o valor do eixo X que será gerado na 
 
 MUNICAO_INICIAL = Municao(PAREDE_ESQUERDA + 70)
 
+'''
+Template para funções que recebem Municao:
+def fn_para_municao(municao):
+    if municao.x < 0:
+        return "Erro: Municao fora do mapa"
+    else:
+        municao.x = random.randint(PAREDE_ESQUERDA, PAREDE_DIREITA)
+
+        ...
+'''
+
+'''
+COMEÇANDO CRIAR PAREDE !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+Para se criar uma parede será utilizado apenas um valor do eixo X CONSTANTE + Sua devida matriz
+'''
+
+
+#######################################################################################################################################
 
 Jogo = namedlist("Jogo", "vaca, zumbis, bala, leites, municao, game_over, game_ganho")
-
-
 
 ''' 
 Jogo eh criado como: Jogo(Vaca, List<Zumbi>, Bala, List<Leite>, Municao, Boolean)
@@ -272,9 +290,6 @@ def mover_leite(leite):
         #calcula novo dy
         if (leite.y == PAREDE_BAIXO and leite.dy > 0):
             leite.dy = - leite.dy
-        if (leite.y == PAREDE_CIMA and leite.dy < 0):  
-            leite.dy = 0 ## CASO CHEGUE NA PAREDE CIMA O DV ZERA
-            leite.y = PAREDE_BAIXO ## E VOLTA PARA SEU LUGAR PRINCIPAL
 
         #calcula novo y
         leite.y = leite.y + leite.dy
@@ -579,6 +594,7 @@ Quando teclar espaço, a vaca atira o leite
 '''
 def trata_tecla_leite(leite, tecla):
     if tecla == pg.K_SPACE:
+       
         leite.dy = DV
  
     return leite
@@ -624,9 +640,15 @@ def trata_tecla(jogo, tecla):
         ## EM CONSTRUÇÃO ##
         municao_vaca = len(jogo.leites)
 
+        
         if municao_vaca != 0:
-            if  jogo.leites[municao_vaca-1].dy == 0:
+
+            if  jogo.leites[municao_vaca-1].dy == 0: ### SE LEITE[N] == 0 (ATIRA)  
                 jogo.leites[municao_vaca-1] = trata_tecla_leite(jogo.leites[municao_vaca-1], tecla)
+            elif jogo.leites[municao_vaca-2].dy == 0: ### SENÃO - SE LEITE[N-1] == 0 (ATIRA)
+                    jogo.leites[municao_vaca-2] = trata_tecla_leite(jogo.leites[municao_vaca-2], tecla)
+
+            ## SENÃO (NÃO ATIRA)
             
 
         return jogo
