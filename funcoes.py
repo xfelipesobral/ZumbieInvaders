@@ -83,7 +83,6 @@ def mover_bala(bala):
     else:
         #calcula novo y
         bala.y = bala.y + bala.dy
-        bala.dy = bala.dy
 
         if bala.y > PAREDE_BAIXO:
             bala.y = PAREDE_BAIXO
