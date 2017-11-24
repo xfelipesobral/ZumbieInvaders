@@ -1,3 +1,6 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
 from dados import *
 import math
 import random
@@ -402,6 +405,7 @@ def trata_tecla(jogo, tecla):
     ## PRECISA ARRUMAR ESSA PARTE
     if (jogo.game_over == True)  and tecla == pg.K_F1:
         return JOGO_INICIAL
+
     if (jogo.game_ganho == True) and tecla == pg.K_F1:
         return JOGO_INICIAL
     ## -----------
@@ -414,10 +418,11 @@ def trata_tecla(jogo, tecla):
         
         if municao_vaca != 0:
 
-            if  jogo.leites[municao_vaca-1].dy == 0: ### SE LEITE[N] == 0 (ATIRA)  
-                jogo.leites[municao_vaca-1] = trata_tecla_leite(jogo.leites[municao_vaca-1], tecla)
-            elif jogo.leites[municao_vaca-2].dy == 0: ### SENÃO - SE LEITE[N-1] == 0 (ATIRA)
-                    jogo.leites[municao_vaca-2] = trata_tecla_leite(jogo.leites[municao_vaca-2], tecla)
+            for leite in jogo.leites:
+                
+                if leite.dy == 0:
+                    leite = trata_tecla_leite(leite, tecla)
+                    break
 
             ## SENÃO (NÃO ATIRA)
             
