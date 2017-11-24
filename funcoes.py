@@ -412,19 +412,16 @@ def trata_tecla(jogo, tecla):
     else:
         jogo.vaca = trata_tecla_vaca(jogo.vaca, tecla)
 
-        ## EM CONSTRUÇÃO ##
-        municao_vaca = len(jogo.leites)
+        municao_vaca = len(jogo.leites) ## PEGA O TAMANHO DA LISTA
 
         
-        if municao_vaca != 0:
+        if municao_vaca != 0: ## SE TIVER ALGO NA LISTA
 
-            for leite in jogo.leites:
+            for leite in jogo.leites: ## ATIRE LEITE
                 
                 if leite.dy == 0:
                     leite = trata_tecla_leite(leite, tecla)
                     break
-
-            ## SENÃO (NÃO ATIRA)
             
 
         return jogo
