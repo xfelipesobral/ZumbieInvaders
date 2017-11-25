@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-bb
 
 from universe import *
+import random
 
 '''
 ====================
@@ -19,6 +20,8 @@ try:
     IMG_BALA_Z = pg.image.load('img/bala.png')
     IMG_BALA_V = pg.image.load('img/leite.png')
     IMG_MUNICAO = pg.image.load('img/municao.png')
+    IMG_LOSE = pg.image.load('img/lose.png')
+    IMG_WIN = pg.image.load('img/win.png')
 
 except:
     IMG_VACA = pg.Surface((100,100),pg.SRCALPHA)
@@ -27,6 +30,8 @@ except:
     IMG_BALA_Z = pg.Surface((100,100),pg.SRCALPHA)
     IMG_BALA_V = pg.Surface((100,100),pg.SRCALPHA)
     IMG_MUNICAO = pg.Surface((100,100),pg.SRCALPHA)
+    IMG_LOSE = pg.Surface((100,100),pg.SRCALPHA)
+    IMG_WIN = pg.Surface((100,100),pg.SRCALPHA)
     print("IMAGENS NÃO CARREGADAS!!!")
 
 ## CONSTANTES DE VACA ##
@@ -50,3 +55,4 @@ PAREDE_ESQUERDA = 0 + IMG_VACA.get_width()/2
 PAREDE_DIREITA = LARGURA - IMG_VACA.get_width()/2
 PAREDE_CIMA = 0
 PAREDE_BAIXO = ALTURA
+

@@ -307,16 +307,12 @@ def desenha_jogo(jogo):
     if jogo.game_over:
         desenha_fundo()
         desenha_vaca(jogo.vaca)
-        fonte = pg.font.SysFont("monospace", 40)
-        texto = fonte.render("VOCE PERDEU", 1, (255, 255, 255))
-        TELA.blit(texto, ((LARGURA/2)-110, ALTURA/2))
+        TELA.blit(IMG_LOSE,(PAREDE_DIREITA/2 - IMG_LOSE.get_width()/2, PAREDE_BAIXO/2- IMG_LOSE.get_width()/2))
 
     elif jogo.game_ganho:
         desenha_fundo()
         desenha_vaca(jogo.vaca)
-        fonte = pg.font.SysFont("monospace", 40)
-        texto = fonte.render("VOCE GANHOU", 1, (255, 255, 255))
-        TELA.blit(texto, ((LARGURA/2)-110, ALTURA/2))
+        TELA.blit(IMG_WIN,(PAREDE_DIREITA/2 - IMG_WIN.get_width()/2, PAREDE_BAIXO/2- IMG_WIN.get_width()/2))
 
     else:
         desenha_fundo()
