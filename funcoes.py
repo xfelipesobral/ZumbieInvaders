@@ -136,7 +136,8 @@ def colidir_municao(vaca, municao):
     raio_vaca = IMG_VACA.get_width()/2
     raio_municao = IMG_MUNICAO.get_width()/2
 
-    d = distancia(vaca.x, Y_VACA, municao.x, Y_VACA)
+    d = distancia(vaca.x, Y_VACA, municao.x, Y_VACA) ## SE A VACA COLIDIR COM A MUNICAO = MUNICAO RESPAWN
+
     if d <= raio_vaca + raio_municao:
         municao = municao_respawn(municao)
         return True
@@ -150,11 +151,13 @@ colidirem: Vaca, Leite, Bala, Zumbi -> 1 (perdeu) or 2 (ganhou)
 3- Verifica se o zumbi colidiu com o Y da vaca
 4- Verifica se o leite da vaca colidiu com o zumbi
 '''
-def colidirem(vaca, leite, bala, zumbi):
+def colidirem(vaca, leite, bala, zumbi, feno):
     raio1 = IMG_VACA.get_width()/2
     raio2 = IMG_ZUMBI.get_width()/2
     raio3 = IMG_BALA_V.get_width()/2
     raio4 = IMG_BALA_Z.get_width()/2
+    raio5 = IMG_FENO.get_width()/2
+
 
     ## COLISÕES QUE FAZEM PERDER
     d = distancia(vaca.x, Y_VACA, zumbi.x, zumbi.y) ## VACA /=/ ZUMBI == PERDEU
@@ -174,6 +177,22 @@ def colidirem(vaca, leite, bala, zumbi):
         if d <= raio3 + raio2:
             return 2
 
+    ##COLISAO COM O FENO
+    if feno != None:
+        d = distancia(bala.x, bala.y, feno.x, feno.y)
+        if d <= raio4+raio5:
+            bala.y = PAREDE_BAIXO
+            return 0
+
+        d = distancia(leite.x, leite.y, feno.x, feno.y)
+        if d <= raio3+raio5:
+            leite.y = PAREDE_CIMA
+            return 3
+
+        d = distancia(zumbi.x, zumbi.y, feno.x, feno.y)
+        if d <= raio2+raio5:
+            return 3
+
     return 0
 
 '''
@@ -184,12 +203,12 @@ def mover_jogo(jogo):
     zumbis_vivos = len(jogo.zumbis) ## CONTA QUANTOS ZUMBIS ESTÃO 'VIVOS', QUANTOS ZUMBIS QUE ESTÃO NA LISTA
 
     for zumbi in jogo.zumbis:
-        if colidirem(jogo.vaca, None, jogo.bala, zumbi) == 1: ## SE BALA DO ZUMBI OU ZUMBI CHEGAR A VACA_Y == PERDEU
+        if colidirem(jogo.vaca, None, jogo.bala, zumbi, None) == 1: ## SE BALA DO ZUMBI OU ZUMBI CHEGAR A VACA_Y == PERDEU
             jogo.game_over = True
             return jogo
 
         for leite in jogo.leites:
-            if colidirem(jogo.vaca, leite, jogo.bala, zumbi) == 2:
+            if colidirem(jogo.vaca, leite, jogo.bala, zumbi, None) == 2:
                 jogo.leites.remove(leite)
 
                 if zumbis_vivos == 1: ## SE TIVER SÓ UM ZUMBI VIVO, QUANDO ELE MORRER...
@@ -198,6 +217,13 @@ def mover_jogo(jogo):
                     return jogo
 
                 jogo.zumbis.remove(zumbi)
+
+            for feno in jogo.fenos:
+                if colidirem(jogo.vaca, leite, jogo.bala, zumbi, feno) == 3:
+                    jogo.fenos.remove(feno)
+                    return jogo
+
+
 
 
     #else
@@ -299,6 +325,15 @@ desenha a municao da vaca
 def desenha_municao(municao):
     TELA.blit(IMG_MUNICAO,(municao.x - IMG_MUNICAO.get_width()/2, Y_VACA - IMG_MUNICAO.get_width()/2))
 
+######################################################################################################
+    # EDITANDO AQUI
+def desenha_feno(feno):
+
+    TELA.blit(IMG_FENO,(feno.x - IMG_FENO.get_width()/2, feno.y - IMG_FENO.get_width()/2))
+
+#####################################################################################################
+
+
 '''
 desenha_jogo: Jogo -> Imagem
 Desenha o jogo
@@ -327,6 +362,9 @@ def desenha_jogo(jogo):
         for zumbi in jogo.zumbis:
             desenha_zumbi(zumbi)
 
+        for feno in jogo.fenos:
+            if feno != False:
+                desenha_feno(feno)
 
         municao = str(len(jogo.leites))
         fonte = pg.font.SysFont("monospace", 40)

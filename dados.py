@@ -141,7 +141,34 @@ def fn_para_municao(municao):
         ...
 '''
 
-Jogo = namedlist("Jogo", "vaca, zumbis, bala, leites, municao, game_over, game_ganho")
+############################################################################################################
+    # EM CONSTRUÇÃO 
+
+Feno = namedlist("Feno","x,y")
+
+# FENO INICIAL
+
+F1_1 = Feno(PAREDE_ESQUERDA+170, ALTURA-150)
+F1_2 = Feno(PAREDE_ESQUERDA+170+(IMG_FENO.get_height()), ALTURA-150)
+F1_3 = Feno(PAREDE_ESQUERDA+170+(IMG_FENO.get_height()/2), ALTURA-200)
+
+# FENO FINAL
+F2_1 = Feno(PAREDE_DIREITA-170, ALTURA-150)
+F2_2 = Feno(PAREDE_DIREITA-170-(IMG_FENO.get_height()), ALTURA-150)
+F2_3 = Feno(PAREDE_DIREITA-170-(IMG_FENO.get_height()/2), ALTURA-200)
+
+F3_1 = Feno(PAREDE_DIREITA/2-17, ALTURA-150) 
+F3_2 = Feno(PAREDE_DIREITA/2-17+(IMG_FENO.get_height()), ALTURA-150)
+F3_3 = Feno(PAREDE_DIREITA/2-17+(IMG_FENO.get_height()/2), ALTURA-200)
+
+
+
+############################################################################################################
+
+
+
+
+Jogo = namedlist("Jogo", "vaca, zumbis, bala, leites, municao, fenos, game_over, game_ganho")
 
 ''' 
 Jogo eh criado como: Jogo(Vaca, List<Zumbi>, Bala, List<Leite>, Municao, Boolean)
@@ -151,9 +178,13 @@ ou nao
 Exemplos:
 '''
 
-JOGO_INICIAL    = Jogo(VACA_INICIAL, [ZUMBI7, ZUMBI6, ZUMBI5, ZUMBI4, ZUMBI3, ZUMBI2, ZUMBI1, ZUMBI_INICIAL], BALA_INICIAL, [L4, L3, L2, L1, LEITE_INICIAL], MUNICAO_INICIAL, False, False)
-JOGO_GAME_OVER  = Jogo(VACA_INICIAL, [ZUMBI7, ZUMBI6, ZUMBI5, ZUMBI4, ZUMBI3, ZUMBI2, ZUMBI1, ZUMBI_INICIAL], BALA_INICIAL, [L4, L3, L2, L1, LEITE_INICIAL], MUNICAO_INICIAL, True, False)
-JOGO_GAME_GANHO = Jogo(VACA_INICIAL, [ZUMBI7, ZUMBI6, ZUMBI5, ZUMBI4, ZUMBI3, ZUMBI2, ZUMBI1, ZUMBI_INICIAL], BALA_INICIAL, [L4, L3, L2, L1, LEITE_INICIAL], MUNICAO_INICIAL, False, True)
+JOGO_INICIAL    = Jogo(VACA_INICIAL,
+                        [ZUMBI7, ZUMBI6, ZUMBI5, ZUMBI4, ZUMBI3, ZUMBI2, ZUMBI1, ZUMBI_INICIAL],
+                        BALA_INICIAL, [L4, L3, L2, L1, LEITE_INICIAL], MUNICAO_INICIAL,
+                        [F1_1, F1_2, F1_3, F2_1, F2_2, F2_3, F3_1, F3_2, F3_3], False, False)
+
+JOGO_GAME_OVER  = Jogo(VACA_INICIAL, [ZUMBI7, ZUMBI6, ZUMBI5, ZUMBI4, ZUMBI3, ZUMBI2, ZUMBI1, ZUMBI_INICIAL], BALA_INICIAL, [L4, L3, L2, L1, LEITE_INICIAL], MUNICAO_INICIAL, F1_1, True, False)
+JOGO_GAME_GANHO = Jogo(VACA_INICIAL, [ZUMBI7, ZUMBI6, ZUMBI5, ZUMBI4, ZUMBI3, ZUMBI2, ZUMBI1, ZUMBI_INICIAL], BALA_INICIAL, [L4, L3, L2, L1, LEITE_INICIAL], MUNICAO_INICIAL, F1_1, False, True)
 
 '''
 Template para funcao que recebe Jogo:
