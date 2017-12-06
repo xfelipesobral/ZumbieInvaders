@@ -48,16 +48,16 @@ ZUMBI_VOLTANDO = Zumbi(PAREDE_DIREITA, PAREDE_DIREITA, -DZ)
 ZUMBI_FINAL_VOLTANDO = Zumbi(PAREDE_ESQUERDA, PAREDE_ESQUERDA, -DZ)
 
 ## PRIMEIRA LINHA ##
-ZUMBI_INICIAL = Zumbi(PAREDE_ESQUERDA, PAREDE_CIMA + (IMG_ZUMBI.get_height())/2, DZ)
-ZUMBI1 = Zumbi(PAREDE_ESQUERDA+70 , PAREDE_CIMA + (IMG_ZUMBI.get_height())/2, DZ)
-ZUMBI2 = Zumbi(PAREDE_ESQUERDA+140, PAREDE_CIMA + (IMG_ZUMBI.get_height())/2, DZ)
-ZUMBI3 = Zumbi(PAREDE_ESQUERDA+210, PAREDE_CIMA + (IMG_ZUMBI.get_height())/2, DZ)
+L1_ZUMBI1=  Zumbi(PAREDE_ESQUERDA+(70*0), PAREDE_CIMA + (IMG_ZUMBI.get_height())/2, DZ)
+L1_ZUMBI2 = Zumbi(PAREDE_ESQUERDA+(70*1), PAREDE_CIMA + (IMG_ZUMBI.get_height())/2, DZ)
+L1_ZUMBI3 = Zumbi(PAREDE_ESQUERDA+(70*2), PAREDE_CIMA + (IMG_ZUMBI.get_height())/2, DZ)
+L1_ZUMBI4 = Zumbi(PAREDE_ESQUERDA+(70*3), PAREDE_CIMA + (IMG_ZUMBI.get_height())/2, DZ)
 
 ## SEGUNDA LINHA ##
-ZUMBI4 = Zumbi(PAREDE_ESQUERDA    , PAREDE_BAIXO/8, DZ)
-ZUMBI5 = Zumbi(PAREDE_ESQUERDA+70 , PAREDE_BAIXO/8, DZ)
-ZUMBI6 = Zumbi(PAREDE_ESQUERDA+140, PAREDE_BAIXO/8, DZ)
-ZUMBI7 = Zumbi(PAREDE_ESQUERDA+210, PAREDE_BAIXO/8, DZ)
+L2_ZUMBI1 = Zumbi(PAREDE_ESQUERDA+(70*0), PAREDE_BAIXO/8, DZ)
+L2_ZUMBI2 = Zumbi(PAREDE_ESQUERDA+(70*1), PAREDE_BAIXO/8, DZ)
+L2_ZUMBI3 = Zumbi(PAREDE_ESQUERDA+(70*2), PAREDE_BAIXO/8, DZ)
+L2_ZUMBI4 = Zumbi(PAREDE_ESQUERDA+(70*3), PAREDE_BAIXO/8, DZ)
 
 
 
@@ -141,8 +141,10 @@ def fn_para_municao(municao):
         ...
 '''
 
-############################################################################################################
-    # EM CONSTRUÇÃO 
+
+'''
+Feno pode ser criado utilizando apenas valores de x e y
+'''
 
 Feno = namedlist("Feno","x,y")
 
@@ -161,9 +163,12 @@ F3_1 = Feno(PAREDE_DIREITA/2-17, ALTURA-150)
 F3_2 = Feno(PAREDE_DIREITA/2-17+(IMG_FENO.get_height()), ALTURA-150)
 F3_3 = Feno(PAREDE_DIREITA/2-17+(IMG_FENO.get_height()/2), ALTURA-200)
 
-
-
-############################################################################################################
+'''
+Template para funções que recebem Municao:
+def desenha_feno(feno):
+    tela.BLIT(IMG_FENO...)
+        ...
+'''
 
 
 
@@ -179,12 +184,12 @@ Exemplos:
 '''
 
 JOGO_INICIAL    = Jogo(VACA_INICIAL,
-                        [ZUMBI7, ZUMBI6, ZUMBI5, ZUMBI4, ZUMBI3, ZUMBI2, ZUMBI1, ZUMBI_INICIAL],
+                        [L2_ZUMBI4, L2_ZUMBI3, L2_ZUMBI2, L2_ZUMBI1, L1_ZUMBI4, L1_ZUMBI3, L1_ZUMBI2, L1_ZUMBI1],
                         BALA_INICIAL, [L4, L3, L2, L1, LEITE_INICIAL], MUNICAO_INICIAL,
                         [F1_1, F1_2, F1_3, F2_1, F2_2, F2_3, F3_1, F3_2, F3_3], False, False)
 
-JOGO_GAME_OVER  = Jogo(VACA_INICIAL, [ZUMBI7, ZUMBI6, ZUMBI5, ZUMBI4, ZUMBI3, ZUMBI2, ZUMBI1, ZUMBI_INICIAL], BALA_INICIAL, [L4, L3, L2, L1, LEITE_INICIAL], MUNICAO_INICIAL, F1_1, True, False)
-JOGO_GAME_GANHO = Jogo(VACA_INICIAL, [ZUMBI7, ZUMBI6, ZUMBI5, ZUMBI4, ZUMBI3, ZUMBI2, ZUMBI1, ZUMBI_INICIAL], BALA_INICIAL, [L4, L3, L2, L1, LEITE_INICIAL], MUNICAO_INICIAL, F1_1, False, True)
+JOGO_GAME_OVER  = Jogo(None, None, None, None, None, None, True, False)
+JOGO_GAME_GANHO = Jogo(None, None, None, None, None, None, False, True)
 
 '''
 Template para funcao que recebe Jogo:

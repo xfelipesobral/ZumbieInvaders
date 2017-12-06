@@ -21,4 +21,4 @@ class MeusTestes(unittest.TestCase):
         ### SELF            FUNC_T              OBJETO SENDO TESTADO                             RESULTADO ESPERADO
         self.assertEqual(mover_zumbi(Zumbi(PAREDE_ESQUERDA, PAREDE_ESQUERDA, DZ), Zumbi(PAREDE_ESQUERDA, PAREDE_DIREITA-DESLOCAMENTO_ZUMBI, DZ)-DZ, DZ))
 
-    unittest.main()
+    unittest.main([teste_moverVaca, teste_moverZumbi])

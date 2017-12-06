@@ -21,7 +21,7 @@ DESENVOLVEDORES: LUAN UMERES & FELIPE SOBRAL
 
 def main(inic):
     big_bang(inic, tela=TELA,
-    		 frequencia = 60,
+    		 frequencia = 30,
     		 quando_tick=mover_jogo,
              desenhar=desenha_jogo,
              quando_tecla=trata_tecla,

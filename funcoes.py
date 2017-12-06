@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from dados import *
+from main import*
 import math
 import random
 
@@ -181,12 +182,12 @@ def colidirem(vaca, leite, bala, zumbi, feno):
     if feno != None:
         d = distancia(bala.x, bala.y, feno.x, feno.y)
         if d <= raio4+raio5:
-            bala.y = PAREDE_BAIXO
+            bala.y = PAREDE_BAIXO+100
             return 0
 
         d = distancia(leite.x, leite.y, feno.x, feno.y)
         if d <= raio3+raio5:
-            leite.y = PAREDE_CIMA
+            leite.y = PAREDE_CIMA-50
             return 3
 
         d = distancia(zumbi.x, zumbi.y, feno.x, feno.y)
@@ -239,7 +240,7 @@ def mover_jogo(jogo):
 
         mover_leite(leite)
 
-        if leite.y == PAREDE_CIMA:
+        if leite.y <= PAREDE_CIMA:
             jogo.leites.remove(leite)
 
     
@@ -325,13 +326,12 @@ desenha a municao da vaca
 def desenha_municao(municao):
     TELA.blit(IMG_MUNICAO,(municao.x - IMG_MUNICAO.get_width()/2, Y_VACA - IMG_MUNICAO.get_width()/2))
 
-######################################################################################################
-    # EDITANDO AQUI
+'''
+desenha_feno: Feno -> Imagem
+desenha o feno
+'''
 def desenha_feno(feno):
-
     TELA.blit(IMG_FENO,(feno.x - IMG_FENO.get_width()/2, feno.y - IMG_FENO.get_width()/2))
-
-#####################################################################################################
 
 
 '''
@@ -341,12 +341,10 @@ Desenha o jogo
 def desenha_jogo(jogo):
     if jogo.game_over:
         desenha_fundo()
-        desenha_vaca(jogo.vaca)
         TELA.blit(IMG_LOSE,(PAREDE_DIREITA/2 - IMG_LOSE.get_width()/2, PAREDE_BAIXO/2- IMG_LOSE.get_width()/2))
 
     elif jogo.game_ganho:
         desenha_fundo()
-        desenha_vaca(jogo.vaca)
         TELA.blit(IMG_WIN,(PAREDE_DIREITA/2 - IMG_WIN.get_width()/2, PAREDE_BAIXO/2- IMG_WIN.get_width()/2))
 
     else:
