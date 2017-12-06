@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 
 from dados import *
-from main import*
 import math
 import random
 
