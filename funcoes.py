@@ -248,6 +248,7 @@ def mover_jogo(jogo):
     
         # SE O Y FOR > QUE A PAREDE BAIXO | ESSA CONDIÇÃO FAZ COM QUE A BALA SAIA SEMPRE DO ZUMBI
         if jogo.bala.y>=PAREDE_BAIXO:
+            zumbis_vivos = len(jogo.zumbis)
         
             if zumbis_vivos >= 1:
                 novaBala = random.randint(0,(zumbis_vivos-1)) #GERA UM NUMERO RANDOMICO COM O TANTO DE ZUMBI NA LISTA 
