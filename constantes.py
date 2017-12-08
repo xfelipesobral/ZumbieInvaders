@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-bb
+# -*- coding: utf-8 -*-
 
 from universe import *
 import random
@@ -61,4 +61,3 @@ PAREDE_ESQUERDA = 0 + IMG_VACA.get_width()/2
 PAREDE_DIREITA = LARGURA - IMG_VACA.get_width()/2
 PAREDE_CIMA = 0
 PAREDE_BAIXO = ALTURA
-

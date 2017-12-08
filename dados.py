@@ -48,16 +48,20 @@ ZUMBI_VOLTANDO = Zumbi(PAREDE_DIREITA, PAREDE_DIREITA, -DZ)
 ZUMBI_FINAL_VOLTANDO = Zumbi(PAREDE_ESQUERDA, PAREDE_ESQUERDA, -DZ)
 
 ## PRIMEIRA LINHA ##
-L1_ZUMBI1=  Zumbi(PAREDE_ESQUERDA+(70*0), PAREDE_CIMA + (IMG_ZUMBI.get_height())/2, DZ)
+L1_ZUMBI1 = Zumbi(PAREDE_ESQUERDA+(70*0), PAREDE_CIMA + (IMG_ZUMBI.get_height())/2, DZ)
 L1_ZUMBI2 = Zumbi(PAREDE_ESQUERDA+(70*1), PAREDE_CIMA + (IMG_ZUMBI.get_height())/2, DZ)
 L1_ZUMBI3 = Zumbi(PAREDE_ESQUERDA+(70*2), PAREDE_CIMA + (IMG_ZUMBI.get_height())/2, DZ)
 L1_ZUMBI4 = Zumbi(PAREDE_ESQUERDA+(70*3), PAREDE_CIMA + (IMG_ZUMBI.get_height())/2, DZ)
+L1_ZUMBI5 = Zumbi(PAREDE_ESQUERDA+(70*4), PAREDE_CIMA + (IMG_ZUMBI.get_height())/2, DZ) 
+L1_ZUMBI6 = Zumbi(PAREDE_ESQUERDA+(70*5), PAREDE_CIMA + (IMG_ZUMBI.get_height())/2, DZ)
 
 ## SEGUNDA LINHA ##
-L2_ZUMBI1 = Zumbi(PAREDE_ESQUERDA+(70*0), PAREDE_BAIXO/8, DZ)
-L2_ZUMBI2 = Zumbi(PAREDE_ESQUERDA+(70*1), PAREDE_BAIXO/8, DZ)
-L2_ZUMBI3 = Zumbi(PAREDE_ESQUERDA+(70*2), PAREDE_BAIXO/8, DZ)
-L2_ZUMBI4 = Zumbi(PAREDE_ESQUERDA+(70*3), PAREDE_BAIXO/8, DZ)
+L2_ZUMBI1 = Zumbi(PAREDE_DIREITA-(70*0.5), PAREDE_BAIXO/8, -DZ)
+L2_ZUMBI2 = Zumbi(PAREDE_DIREITA-(70*1.5), PAREDE_BAIXO/8, -DZ)
+L2_ZUMBI3 = Zumbi(PAREDE_DIREITA-(70*2.5), PAREDE_BAIXO/8, -DZ)
+L2_ZUMBI4 = Zumbi(PAREDE_DIREITA-(70*3.5), PAREDE_BAIXO/8, -DZ)
+L2_ZUMBI5 = Zumbi(PAREDE_DIREITA-(70*4.5), PAREDE_BAIXO/8, -DZ) 
+L2_ZUMBI6 = Zumbi(PAREDE_DIREITA-(70*5.5), PAREDE_BAIXO/8, -DZ)
 
 
 
@@ -141,32 +145,42 @@ def fn_para_municao(municao):
         ...
 '''
 
+Feno = namedlist("Feno","x,y")
 
 '''
 Feno pode ser criado utilizando apenas valores de x e y
 '''
 
-Feno = namedlist("Feno","x,y")
-
-# FENO INICIAL
-
+# TUPLA FENO 1
 F1_1 = Feno(PAREDE_ESQUERDA+170, ALTURA-150)
 F1_2 = Feno(PAREDE_ESQUERDA+170+(IMG_FENO.get_height()), ALTURA-150)
 F1_3 = Feno(PAREDE_ESQUERDA+170+(IMG_FENO.get_height()/2), ALTURA-200)
 
-# FENO FINAL
+# TUPLA FENO 2
 F2_1 = Feno(PAREDE_DIREITA-170, ALTURA-150)
 F2_2 = Feno(PAREDE_DIREITA-170-(IMG_FENO.get_height()), ALTURA-150)
 F2_3 = Feno(PAREDE_DIREITA-170-(IMG_FENO.get_height()/2), ALTURA-200)
 
+# TUPLA FENO 3
 F3_1 = Feno(PAREDE_DIREITA/2-17, ALTURA-150) 
 F3_2 = Feno(PAREDE_DIREITA/2-17+(IMG_FENO.get_height()), ALTURA-150)
 F3_3 = Feno(PAREDE_DIREITA/2-17+(IMG_FENO.get_height()/2), ALTURA-200)
 
+# TUPLA FENO 4
+F4_1 = Feno(PAREDE_ESQUERDA+(IMG_FENO.get_height()/2), ALTURA-150)
+F4_2 = Feno(PAREDE_ESQUERDA+(IMG_FENO.get_height()/2)+(IMG_FENO.get_height()), ALTURA-150)
+F4_3 = Feno(PAREDE_ESQUERDA+(IMG_FENO.get_height()/2)+(IMG_FENO.get_height()/2), ALTURA-200)
+
+# TUPLA FENO 5
+F5_1 = Feno(PAREDE_DIREITA-(IMG_FENO.get_height()/2), ALTURA-150)
+F5_2 = Feno(PAREDE_DIREITA-(IMG_FENO.get_height()/2)-(IMG_FENO.get_height()), ALTURA-150)
+F5_3 = Feno(PAREDE_DIREITA-(IMG_FENO.get_height()/2)-(IMG_FENO.get_height()/2), ALTURA-200)
+
+
 '''
 Template para funções que recebem Municao:
 def desenha_feno(feno):
-    tela.BLIT(IMG_FENO...)
+    tela.BLIT(IMG_FENO,(feno.x, feno.y))
         ...
 '''
 
@@ -184,12 +198,19 @@ Exemplos:
 '''
 
 JOGO_INICIAL    = Jogo(VACA_INICIAL,
+                        [L2_ZUMBI6, L2_ZUMBI5, L2_ZUMBI4, L2_ZUMBI3, L2_ZUMBI2, L2_ZUMBI1, L1_ZUMBI6, L1_ZUMBI5, L1_ZUMBI4, L1_ZUMBI3, L1_ZUMBI2, L1_ZUMBI1],
+                        BALA_INICIAL, [L4, L3, L2, L1, LEITE_INICIAL], MUNICAO_INICIAL,
+                        [F1_1, F1_2, F1_3, F2_1, F2_2, F2_3, F3_1, F3_2, F3_3, F4_3, F4_2, F4_1, F5_1, F5_2, F5_3], False, False)
+
+JOGO_GAME_OVER  = Jogo(VACA_INICIAL,
                         [L2_ZUMBI4, L2_ZUMBI3, L2_ZUMBI2, L2_ZUMBI1, L1_ZUMBI4, L1_ZUMBI3, L1_ZUMBI2, L1_ZUMBI1],
                         BALA_INICIAL, [L4, L3, L2, L1, LEITE_INICIAL], MUNICAO_INICIAL,
-                        [F1_1, F1_2, F1_3, F2_1, F2_2, F2_3, F3_1, F3_2, F3_3], False, False)
+                        [F1_1, F1_2, F1_3, F2_1, F2_2, F2_3, F3_1, F3_2, F3_3, F4_3, F4_2, F4_1, F5_1, F5_2, F5_3], True, False)
 
-JOGO_GAME_OVER  = Jogo(None, None, None, None, None, None, True, False)
-JOGO_GAME_GANHO = Jogo(None, None, None, None, None, None, False, True)
+JOGO_GAME_GANHO = Jogo(VACA_INICIAL,
+                        [L2_ZUMBI4, L2_ZUMBI3, L2_ZUMBI2, L2_ZUMBI1, L1_ZUMBI4, L1_ZUMBI3, L1_ZUMBI2, L1_ZUMBI1],
+                        BALA_INICIAL, [L4, L3, L2, L1, LEITE_INICIAL], MUNICAO_INICIAL,
+                        [F1_1, F1_2, F1_3, F2_1, F2_2, F2_3, F3_1, F3_2, F3_3, F4_3, F4_2, F4_1], False, True)
 
 '''
 Template para funcao que recebe Jogo:
@@ -199,5 +220,6 @@ def fn_para_jogo(jogo):
         jogo.bala
         jogo.leites
         jogo.municao
+        jogo.feno
         jogo.game_over
 '''

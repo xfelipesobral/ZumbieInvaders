@@ -102,7 +102,7 @@ def municao_respawn(municao):
     if municao.x < 0:
         return "Erro: Municao fora do mapa"
     else:
-        municao.x = random.randint(PAREDE_ESQUERDA, PAREDE_DIREITA)
+        municao.x = random.randint(PAREDE_ESQUERDA, PAREDE_DIREITA) # GERA UM VALOR ENTRE PAREDE_ESQUERDA (0) E PAREDE DIREITA (800)
 
         return municao
 
@@ -112,11 +112,11 @@ Recebe leites da vaca e recarrega ele, acrescentando leites na lista até chegar
 '''
 def recarrega_municao(leites):
 
-    if len(leites) == 0:
-        leites.extend([Leite(PAREDE_BAIXO, PAREDE_BAIXO, 0), Leite(PAREDE_BAIXO, PAREDE_BAIXO, 0), Leite(PAREDE_BAIXO, PAREDE_BAIXO, 0), Leite(PAREDE_BAIXO, PAREDE_BAIXO, 0), Leite(PAREDE_BAIXO, PAREDE_BAIXO, 0)])
-    elif len(leites) >= 10:
+    if len(leites) == 0: ## SE MUNICAO == 0, ENTAO ADICONA 5 LEITES A LISTA VAZIA
+        leites.extend([Leite(PAREDE_BAIXO, PAREDE_BAIXO, 0), Leite(PAREDE_BAIXO, PAREDE_BAIXO, 0), Leite(PAREDE_BAIXO, PAREDE_BAIXO, 0), Leite(PAREDE_BAIXO, PAREDE_BAIXO, 0), Leite(PAREDE_BAIXO, PAREDE_BAIXO, 0)]) ### ADICIONA 5 LEITES
+    elif len(leites) >= 10: ## SE LEITES FOR MAIOR OU IGUAL A 10 ELE APENAS RETORNA LEITES
         return leites
-    else:
+    else: ## SENÃO ELE ADICIONA UM LEITE A LISTA
         leites.append(Leite(PAREDE_BAIXO, PAREDE_BAIXO, 0))
 
     return leites 
@@ -130,26 +130,27 @@ def distancia(x1, y1, x2, y2):
     return math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2)
 
 '''
-colidir_municao: Vaca, Municao -> Verifica e chama funcao de RESPAWN ->  Tru or False
+colidir_municao: Vaca, Municao -> Verifica e chama funcao de RESPAWN ->  True or False
 '''
 def colidir_municao(vaca, municao):
     raio_vaca = IMG_VACA.get_width()/2
     raio_municao = IMG_MUNICAO.get_width()/2
 
-    d = distancia(vaca.x, Y_VACA, municao.x, Y_VACA) ## SE A VACA COLIDIR COM A MUNICAO = MUNICAO RESPAWN
+    d = distancia(vaca.x, Y_VACA, municao.x, Y_VACA)
 
-    if d <= raio_vaca + raio_municao:
+    if d <= raio_vaca + raio_municao:  ## SE A VACA COLIDIR COM A MUNICAO = MUNICAO RESPAWN
         municao = municao_respawn(municao)
         return True
 
     return False
 
 '''
-colidirem: Vaca, Leite, Bala, Zumbi -> 1 (perdeu) or 2 (ganhou)
+colidirem: Vaca, Leite, Bala, Zumbi, Feno -> 1 (perdeu) or 2 (ganhou) or 3 (alternativa)
 1- Verifica se a vaca e o zumbi colidiram
 2- Verifica se a bala colidiu com a vaca
 3- Verifica se o zumbi colidiu com o Y da vaca
 4- Verifica se o leite da vaca colidiu com o zumbi
+5- Verifica as colisoes com o feno
 '''
 def colidirem(vaca, leite, bala, zumbi, feno):
     raio1 = IMG_VACA.get_width()/2
@@ -209,63 +210,65 @@ def mover_jogo(jogo):
 
         for leite in jogo.leites:
             if colidirem(jogo.vaca, leite, jogo.bala, zumbi, None) == 2:
-                jogo.leites.remove(leite)
+                jogo.leites.remove(leite) ## QUANDO BALA ATINGE ZUMBI, ELA É REMOVIDA
 
                 if zumbis_vivos == 1: ## SE TIVER SÓ UM ZUMBI VIVO, QUANDO ELE MORRER...
                     jogo.zumbis.remove(zumbi)
                     jogo.game_ganho = True
-                    return jogo
+                    break
 
-                jogo.zumbis.remove(zumbi)
+                jogo.zumbis.remove(zumbi) ## REMOVE ZUMBI QUANDO FOR ATINGIDO PELA BALA
 
-            for feno in jogo.fenos:
-                if colidirem(jogo.vaca, leite, jogo.bala, zumbi, feno) == 3:
-                    jogo.fenos.remove(feno)
-                    return jogo
+            if leite.y >= ALTURA-150 or jogo.bala.y <= ALTURA-200:
+                for feno in jogo.fenos:
+                    if colidirem(jogo.vaca, leite, jogo.bala, zumbi, feno) == 3:
+                        jogo.fenos.remove(feno)
+                        return jogo
 
+    if jogo.game_ganho:
+        jogo.game_ganho = True
+        return jogo
 
+    else: 
+        mover_vaca(jogo.vaca)
 
+        if colidir_municao(jogo.vaca, jogo.municao) == True:
+            recarrega_municao(jogo.leites)
 
-    #else
-    mover_vaca(jogo.vaca)
+        # CASO O LEITE ESTEJA NO Y INICIAL
+        for leite in jogo.leites:
+            if leite.y >= PAREDE_BAIXO-(IMG_VACA.get_height()):
+                leite.x = jogo.vaca.x #SE SIM, ELE RECEBE X DA VACA
 
-    if colidir_municao(jogo.vaca, jogo.municao) == True:
-        recarrega_municao(jogo.leites)
+            mover_leite(leite)
 
-    # CASO O LEITE ESTEJA NO Y INICIAL
-    for leite in jogo.leites:
-        if leite.y >= PAREDE_BAIXO-(IMG_VACA.get_height()):
-            leite.x = jogo.vaca.x #SE SIM, ELE RECEBE X DA VACA
-
-        mover_leite(leite)
-
-        if leite.y <= PAREDE_CIMA:
-            jogo.leites.remove(leite)
+            if leite.y <= PAREDE_CIMA:
+                jogo.leites.remove(leite)
 
     
-    # SE O Y FOR > QUE A PAREDE BAIXO | ESSA CONDIÇÃO FAZ COM QUE A BALA SAIA SEMPRE DO ZUMBI
-    if jogo.bala.y>=PAREDE_BAIXO:
+        # SE O Y FOR > QUE A PAREDE BAIXO | ESSA CONDIÇÃO FAZ COM QUE A BALA SAIA SEMPRE DO ZUMBI
+        if jogo.bala.y>=PAREDE_BAIXO:
         
-        if zumbis_vivos >= 1:
-            novaBala = random.randint(0,(zumbis_vivos-1))
-        else:
-            novaBala = 0
+            if zumbis_vivos >= 1:
+                novaBala = random.randint(0,(zumbis_vivos-1)) #GERA UM NUMERO RANDOMICO COM O TANTO DE ZUMBI NA LISTA 
+            else:
+                novaBala = 0
 
-        jogo.bala.x = jogo.zumbis[novaBala].x # X DA BALA RECEBE X DO ZUMBI
-        jogo.bala.y = jogo.zumbis[novaBala].y # Y DA BALA RECEBE Y DO ZUMBI
+            jogo.bala.x = jogo.zumbis[novaBala].x # X DA BALA RECEBE X DO ZUMBI
+            jogo.bala.y = jogo.zumbis[novaBala].y # Y DA BALA RECEBE Y DO ZUMBI
 
-    for zumbi in jogo.zumbis:
+        for zumbi in jogo.zumbis:
 
-        # SE O Y DA BALA == PAREDE_CIMA, OU SEJA COMEÇAR PARA FORA DO JOGO; A BALA RECEBE X DO ZUMBI
-        if jogo.bala.y == PAREDE_CIMA: 
-            novaBala = random.randint(0,(zumbis_vivos-1))  
-            jogo.bala.x = jogo.zumbis[novaBala].x
+            # SE O Y DA BALA == PAREDE_CIMA, OU SEJA COMEÇAR PARA FORA DO JOGO; A BALA RECEBE X DO ZUMBI
+            if jogo.bala.y == PAREDE_CIMA: 
+                novaBala = random.randint(0,(zumbis_vivos-1))  
+                jogo.bala.x = jogo.zumbis[novaBala].x
 
-        mover_zumbi(zumbi)  # funcao auxiliar (helper)
+            mover_zumbi(zumbi)
 
-    mover_bala(jogo.bala)
+        mover_bala(jogo.bala)
 
-    return jogo
+        return jogo
 
 
 
@@ -295,14 +298,6 @@ def desenha_zumbi(zumbi):
                   (zumbi.x- IMG_ZUMBI.get_width()/2,
                    zumbi.y - IMG_ZUMBI.get_height()/2))
 
-'''
-desenha_fundo: Background -> Image
-mDesenha o background
-'''
-def desenha_fundo():
-    TELA.blit(IMG_BACKGROUND,
-              (0,
-              0))
 
 '''
 desenha_leite: Leite -> Imagem
@@ -338,24 +333,22 @@ desenha_jogo: Jogo -> Imagem
 Desenha o jogo
 '''
 def desenha_jogo(jogo):
-    if jogo.game_over:
-        desenha_fundo()
+    TELA.blit(IMG_BACKGROUND, (0, 0))
+
+    if jogo.game_over == True:
         TELA.blit(IMG_LOSE,(PAREDE_DIREITA/2 - IMG_LOSE.get_width()/2, PAREDE_BAIXO/2- IMG_LOSE.get_width()/2))
 
-    elif jogo.game_ganho:
-        desenha_fundo()
+    elif jogo.game_ganho == True:
         TELA.blit(IMG_WIN,(PAREDE_DIREITA/2 - IMG_WIN.get_width()/2, PAREDE_BAIXO/2- IMG_WIN.get_width()/2))
 
     else:
-        desenha_fundo()
         desenha_bala(jogo.bala)
         desenha_municao(jogo.municao)
+        desenha_vaca(jogo.vaca)
         
         for leite in jogo.leites:
             desenha_leite(leite)
 
-        desenha_vaca(jogo.vaca)
-        
         for zumbi in jogo.zumbis:
             desenha_zumbi(zumbi)
 
@@ -428,18 +421,81 @@ def trata_solta_tecla(jogo, tecla):
     return jogo
 
 '''
+gera_novoJogo: retorna JOGO_INICIAL
+Reinicializa as variáveis para retornar um NOVO JOGO
+'''
+def gera_novoJogo():
+    VACA_INICIAL = Vaca(LARGURA/2, 0)
+
+    ## PRIMEIRA LINHA ##
+    L1_ZUMBI1 = Zumbi(PAREDE_ESQUERDA+(70*0), PAREDE_CIMA + (IMG_ZUMBI.get_height())/2, DZ)
+    L1_ZUMBI2 = Zumbi(PAREDE_ESQUERDA+(70*1), PAREDE_CIMA + (IMG_ZUMBI.get_height())/2, DZ)
+    L1_ZUMBI3 = Zumbi(PAREDE_ESQUERDA+(70*2), PAREDE_CIMA + (IMG_ZUMBI.get_height())/2, DZ)
+    L1_ZUMBI4 = Zumbi(PAREDE_ESQUERDA+(70*3), PAREDE_CIMA + (IMG_ZUMBI.get_height())/2, DZ)
+    L1_ZUMBI5 = Zumbi(PAREDE_ESQUERDA+(70*4), PAREDE_CIMA + (IMG_ZUMBI.get_height())/2, DZ) 
+    L1_ZUMBI6 = Zumbi(PAREDE_ESQUERDA+(70*5), PAREDE_CIMA + (IMG_ZUMBI.get_height())/2, DZ)
+
+    ##  SEGUNDA LINHA ##
+    L2_ZUMBI1 = Zumbi(PAREDE_DIREITA-(70*0.5), PAREDE_BAIXO/8, -DZ)
+    L2_ZUMBI2 = Zumbi(PAREDE_DIREITA-(70*1.5), PAREDE_BAIXO/8, -DZ)
+    L2_ZUMBI3 = Zumbi(PAREDE_DIREITA-(70*2.5), PAREDE_BAIXO/8, -DZ)
+    L2_ZUMBI4 = Zumbi(PAREDE_DIREITA-(70*3.5), PAREDE_BAIXO/8, -DZ)
+    L2_ZUMBI5 = Zumbi(PAREDE_DIREITA-(70*4.5), PAREDE_BAIXO/8, -DZ) 
+    L2_ZUMBI6 = Zumbi(PAREDE_DIREITA-(70*5.5), PAREDE_BAIXO/8, -DZ)
+
+    LEITE_INICIAL = Leite(PAREDE_BAIXO, PAREDE_BAIXO, 0)
+    L1 = Leite(PAREDE_BAIXO, PAREDE_BAIXO, 0)
+    L2 = Leite(PAREDE_BAIXO, PAREDE_BAIXO, 0)
+    L3 = Leite(PAREDE_BAIXO, PAREDE_BAIXO, 0)
+    L4 = Leite(PAREDE_BAIXO, PAREDE_BAIXO, 0)
+
+    BALA_INICIAL = Bala(PAREDE_CIMA, PAREDE_CIMA, DZZ)
+
+    MUNICAO_INICIAL = Municao(PAREDE_ESQUERDA + 70)
+
+    # TUPLA FENO 1
+    F1_1 = Feno(PAREDE_ESQUERDA+170, ALTURA-150)
+    F1_2 = Feno(PAREDE_ESQUERDA+170+(IMG_FENO.get_height()), ALTURA-150)
+    F1_3 = Feno(PAREDE_ESQUERDA+170+(IMG_FENO.get_height()/2), ALTURA-200)
+
+    # TUPLA FENO 2
+    F2_1 = Feno(PAREDE_DIREITA-170, ALTURA-150)
+    F2_2 = Feno(PAREDE_DIREITA-170-(IMG_FENO.get_height()), ALTURA-150)
+    F2_3 = Feno(PAREDE_DIREITA-170-(IMG_FENO.get_height()/2), ALTURA-200)
+
+    # TUPLA FENO 3
+    F3_1 = Feno(PAREDE_DIREITA/2-17, ALTURA-150) 
+    F3_2 = Feno(PAREDE_DIREITA/2-17+(IMG_FENO.get_height()), ALTURA-150)
+    F3_3 = Feno(PAREDE_DIREITA/2-17+(IMG_FENO.get_height()/2), ALTURA-200)
+
+    #   TUPLA FENO 4
+    F4_1 = Feno(PAREDE_ESQUERDA+(IMG_FENO.get_height()/2), ALTURA-150)
+    F4_2 = Feno(PAREDE_ESQUERDA+(IMG_FENO.get_height()/2)+(IMG_FENO.get_height()), ALTURA-150)
+    F4_3 = Feno(PAREDE_ESQUERDA+(IMG_FENO.get_height()/2)+(IMG_FENO.get_height()/2), ALTURA-200)
+
+    #  TUPLA FENO 5
+    F5_1 = Feno(PAREDE_DIREITA-(IMG_FENO.get_height()/2), ALTURA-150)
+    F5_2 = Feno(PAREDE_DIREITA-(IMG_FENO.get_height()/2)-(IMG_FENO.get_height()), ALTURA-150)
+    F5_3 = Feno(PAREDE_DIREITA-(IMG_FENO.get_height()/2)-(IMG_FENO.get_height()/2), ALTURA-200)
+
+
+    JOGO_INICIAL    = Jogo(VACA_INICIAL,
+                        [L2_ZUMBI6, L2_ZUMBI5, L2_ZUMBI4, L2_ZUMBI3, L2_ZUMBI2, L2_ZUMBI1, L1_ZUMBI6, L1_ZUMBI5, L1_ZUMBI4, L1_ZUMBI3, L1_ZUMBI2, L1_ZUMBI1],
+                        BALA_INICIAL, [L4, L3, L2, L1, LEITE_INICIAL], MUNICAO_INICIAL,
+                        [F1_1, F1_2, F1_3, F2_1, F2_2, F2_3, F3_1, F3_2, F3_3, F4_3, F4_2, F4_1, F5_1, F5_2, F5_3], False, False)
+
+    return JOGO_INICIAL
+'''
 trata_tecla: Jogo, EventoTecla -> Jogo
 Trata tecla geral
 '''
 def trata_tecla(jogo, tecla):
-
-    ## PRECISA ARRUMAR ESSA PARTE
     if (jogo.game_over == True)  and tecla == pg.K_F1:
-        return JOGO_INICIAL
+        return gera_novoJogo()
 
     if (jogo.game_ganho == True) and tecla == pg.K_F1:
-        return JOGO_INICIAL
-    ## -----------
+        return gera_novoJogo()
+
     else:
         jogo.vaca = trata_tecla_vaca(jogo.vaca, tecla)
 

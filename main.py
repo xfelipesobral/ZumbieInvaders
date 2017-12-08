@@ -5,13 +5,13 @@ from funcoes import *
 
 '''
 
-ZUMBIE INVADERS 0.0.7
+ZUMBIE INVADERS V2
 
 DESENVOLVEDORES: LUAN UMERES & FELIPE SOBRAL
 '''
 
 '''
-====================
+====================   
       MAIN
 ====================
 '''
